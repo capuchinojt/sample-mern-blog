@@ -1,8 +1,16 @@
+import { BrowserRouter, Route, Routes } from "react-router-dom"
+import { pages } from "./routes"
+
 export default function App() {
 
   return (
-    <h1 className="text-3xl text-red-500">
-      This is my MERN Blog
-    </h1>
+    <BrowserRouter>
+      <Routes>
+        {
+          // eslint-disable-next-line react/jsx-key
+          pages.map((page) => <Route {...page}/>)
+        }
+      </Routes>
+    </BrowserRouter>
   )
 }
