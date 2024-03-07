@@ -6,10 +6,10 @@ import SignIn from "../pages/SignIn"
 import SignUp from "../pages/SignUp"
 
 export const pages = [
-  {path: '/', element:<Home />},
-  {path: '/about', element:<About />},
-  {path: '/sign-in', element:<SignIn />},
-  {path: '/sign-up', element:<SignUp />},
-  {path: '/dashboard', element:<Dashboard />},
-  {path: '/projects', element:<Projects />},
+  {path: '/', element:<Home />, key: 'Home'},
+  {path: '/about', element:<About />, key: 'About'},
+  {path: '/sign-in', element:<SignIn />, key: 'signIn'},
+  {path: '/sign-up', element:<SignUp />, key: 'signUp'},
+  {path: '/dashboard', element:<Dashboard />, key: 'dashboard'},
+  {path: '/projects', element:<Projects />, key: 'projects'},
 ]
