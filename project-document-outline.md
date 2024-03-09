@@ -34,7 +34,11 @@
 ### 5. Install flowbite-react, react-icons to build Header
 	- Using Link from 'react-router-dom' to handle link to homepage
 	- Using TextInput component from 'Flowbite-react' and AiOutlineSearch from 'react-icons' to handle text input search 
-	
+
+### 6. Using Mongoose to connect to MongoDB
+#### Install Mongoose, dotEnv (to get env variables)
+	=> npm i mongoose
+	=> npm i dotenv
 	
 
 
