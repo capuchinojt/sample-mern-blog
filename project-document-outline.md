@@ -39,6 +39,20 @@
 #### Install Mongoose, dotEnv (to get env variables)
 	=> npm i mongoose
 	=> npm i dotenv
+
+### 7. Create User model by using mongoose.Schema
+#### User model
+						|_username:
+											- type: String
+											- required: true
+											- unique: true
+						|_email
+											- type: String
+											- required: true
+											- unique: true
+						|_password
+											- type: String
+											- required: true
 	
 
 
