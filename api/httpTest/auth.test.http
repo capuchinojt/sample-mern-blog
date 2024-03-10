@@ -1,0 +1,16 @@
+@host = http://localhost:5555
+@userInfoRoute = api/v1/user/info
+@authRoute = api/auth/signup
+
+
+GET {{host}}/{{userInfoRoute}}
+
+### Authentication API
+POST {{host}}/{{authRoute}} HTTP/1.1
+content-type: application/json
+
+{
+  "username": "CapuchinoJT01",
+  "email": "CapuchinoJT01@gmail.com",
+  "password": "testpass"
+}

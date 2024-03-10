@@ -42,18 +42,25 @@
 
 ### 7. Create User model by using mongoose.Schema
 #### User model
-						|_username:
-											- type: String
-											- required: true
-											- unique: true
-						|_email
-											- type: String
-											- required: true
-											- unique: true
-						|_password
-											- type: String
-											- required: true
-	
+			|_username:
+								- type: String
+								- required: true
+								- unique: true
+			|_email
+								- type: String
+								- required: true
+								- unique: true
+			|_password
+								- type: String
+								- required: true
+
+### 8. Create User controller to handle logic + handle sign up requests - install bcryptjs
+ Route: api/auth/signup
+ Controller: 
+  - Get request body { username, email, password: passwordHash }
+	-> Create new User by using User model -> save new user to mongodb
+	* Hash password before save to db by using bcryptjs
+
 
 
 ### HEADER
