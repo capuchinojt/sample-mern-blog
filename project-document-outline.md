@@ -61,6 +61,13 @@
 	-> Create new User by using User model -> save new user to mongodb
 	* Hash password before save to db by using bcryptjs
 
+### 9. Add middleware and function to handle error
+	src
+		|_utils
+			|_error.handler.js (return error with (statusCode, message))
+		|_controllers
+			|_error.controller.js (Handle handleError = (err, req, res, next) then return res with statusCode {success: false, statusCode, message})
+
 
 
 ### HEADER
