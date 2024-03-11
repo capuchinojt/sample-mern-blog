@@ -6,7 +6,14 @@ export default {
     "node_modules/flowbite-react/**/*.{html,js,jsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      backgroundColor: {
+        'not-dark': 'var(--bg-light)',
+      },
+      textColor: {
+        'not-dark': 'var(--text-light)',
+      },
+    },
   },
   plugins: [import('flowbite-react')],
 }

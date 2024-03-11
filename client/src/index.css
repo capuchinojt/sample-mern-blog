@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --bg-light: #ffffff; /* Light background color */
+  --text-light: #000000; /* Light text color */
+  
+  /* Other custom colors */
+}
