@@ -1,7 +1,21 @@
-import { Button, Label, TextInput } from "flowbite-react";
-import { Link } from "react-router-dom";
+import { Button } from "flowbite-react"
+import { Link } from "react-router-dom"
+import { useForm } from 'react-hook-form'
+
+import { InputField } from "../components/InputField"
+import { useDispatch } from "react-redux"
+import { addNewUser } from "../features/signUp/signUpSlice"
+
 
 export default function SignUp() {
+  const {register, handleSubmit} = useForm()
+  const dispatch = useDispatch()
+
+  const onSubmit = data => {
+    console.table('data: ', data)
+    dispatch(addNewUser(data))
+  }
+
   return (
     <div className="min-h-screen mt-20">
       <div className="flex p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center gap-5">
@@ -22,19 +36,10 @@ export default function SignUp() {
         </div>
         {/* right sidebar */}
         <div className="flex-1">
-          <form className="flex flex-col gap-4">
-            <div> 
-              <Label color={'black'} value="Your username" />
-              <TextInput type="text" placeholder="Username" id="username" />
-            </div>
-            <div> 
-              <Label color={'black'} value="Your email" />
-              <TextInput type="text" placeholder="Email" id="email" />
-            </div>
-            <div> 
-              <Label color={'black'} value="Your password" />
-              <TextInput type="text" placeholder="Password" id="password" />
-            </div>
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
+            <InputField id="username" label="Your Username" type="text" registerControl={register('username')} />
+            <InputField id="email" label="Your Email" type="text" registerControl={register('email')} />
+            <InputField id="password" label="Your Password" type="password" registerControl={register('password')} />
             <Button gradientDuoTone='purpleToPink' type="submit">
               Sign Up
             </Button>

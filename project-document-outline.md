@@ -68,7 +68,22 @@
 		|_controllers
 			|_error.controller.js (Handle handleError = (err, req, res, next) then return res with statusCode {success: false, statusCode, message})
 
+### 10. Create sign-up page using tailwindcss 
+	- Add form with:
+		1. Username input:
+			- Label: Your username
+			- Type: TextInput
+		2. Email input:
+			- Label: Your Email
+			- Type: TextInput <type='email'>
+		3. Password input:
+			- Label: Your Password
+			- Type: TextInput <type='password'>
 
+### 11. Install react-hook-form, yup to handle form
+### Install axios to call api
+	=> npm i react-hook-form yup axios
+	- Why?
 
 ### HEADER
  - Web Title to back Homepage
@@ -82,5 +97,7 @@
 
 ### 2. create folder [api] at the same root folder like [client]
 	=> install express: [npm install express]
- 
+
+### Sample project structure
+ ![alt text](image.png)
  
