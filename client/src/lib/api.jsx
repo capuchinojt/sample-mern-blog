@@ -8,14 +8,20 @@ export const fetchData = async (url, config = {}) => {
 
 // Gửi dữ liệu (POST)
 export const postData = async (url, data, config = {}) => {
-  const response = await Api.post(url, JSON.stringify(data), {
-    headers: {
-      'Content-Type': 'application/json',
-      "Access-Control-Allow-Origin": "*"
-    },
-    ...config
-  });
-  return response
+  try {
+    const response = await Api.post(url, JSON.stringify(data), {
+      headers: {
+        'Content-Type': 'application/json',
+        "Access-Control-Allow-Origin": "*"
+      },
+      ...config
+    });
+    console.table(`postData[${url}] - response: `, response)
+    return response
+  } catch (error) {
+    console.table(`postData[${url}] - error: `, error?.response?.data)
+    return error?.response?.data 
+  }
 }
 
 // Cập nhật dữ liệu (PUT)

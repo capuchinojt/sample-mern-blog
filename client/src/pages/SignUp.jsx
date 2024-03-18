@@ -1,15 +1,38 @@
-import { Button } from "flowbite-react"
-import { Link } from "react-router-dom"
+import { Alert, Button, Spinner } from "flowbite-react"
+import { Link, useNavigate } from "react-router-dom"
 import { useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useEffect, useState } from "react"
+import * as yup from 'yup'
 
 import { InputField } from "../components/InputField"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { addNewUser } from "../features/signUp/signUpSlice"
+import { STATUS_SUCCEEDED } from "../services/constant/status.constants"
+
+const userInfoSchema = yup.object({
+  username: yup.string().required(),
+  email: yup.string().email().required(),
+  password: yup.string().required()
+})
 
 
 export default function SignUp() {
-  const {register, handleSubmit} = useForm()
+  const {register, handleSubmit, formState: {errors}} = useForm({
+    resolver: yupResolver(userInfoSchema)
+  })
+  const [isLoading, setIsLoading] = useState(false)
   const dispatch = useDispatch()
+  const result = useSelector(state => state.signUp)
+  const {loading, error, status} = result
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    setIsLoading(loading)
+    if (status === STATUS_SUCCEEDED) {
+      navigate('/sign-in')
+    }
+  }, [loading, status])
 
   const onSubmit = data => {
     console.table('data: ', data)
@@ -37,12 +60,18 @@ export default function SignUp() {
         {/* right sidebar */}
         <div className="flex-1">
           <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
-            <InputField id="username" label="Your Username" type="text" registerControl={register('username')} />
-            <InputField id="email" label="Your Email" type="text" registerControl={register('email')} />
-            <InputField id="password" label="Your Password" type="password" registerControl={register('password')} />
-            <Button gradientDuoTone='purpleToPink' type="submit">
-              Sign Up
+            <InputField id="username" label="Your Username" type="text" registerControl={register('username')} errors={errors} />
+            <InputField id="email" label="Your Email" type="text" registerControl={register('email')} errors={errors} />
+            <InputField id="password" label="Your Password" type="password" registerControl={register('password')} errors={errors} />
+            <Button gradientDuoTone='purpleToPink' type="submit" disabled={isLoading}>
+              {
+                isLoading ? <>
+                  <Spinner size='sm' />
+                  <span className="pl-3">Loading...</span>
+                </> : 'Sign Up'
+              }
             </Button>
+            {error && <Alert color="failure" className="items-center text-center"><span className="font-bold">Sign-up failed.</span><br/> Please check your details and try again.</Alert>}
           </form>
           <div className="flex gap-2 text-sm mt-5">
             <span>Have an account?</span>
