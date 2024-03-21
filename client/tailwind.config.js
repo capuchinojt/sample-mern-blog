@@ -15,6 +15,7 @@ export default {
       },
     },
   },
+  darkMode: 'class',
   plugins: [import('flowbite-react')],
 }
 

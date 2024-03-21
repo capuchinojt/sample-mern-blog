@@ -1,16 +1,13 @@
-import { Button, Navbar, TextInput } from "flowbite-react";
+import { Button, DarkThemeToggle, Navbar, TextInput } from "flowbite-react";
 import { Link, useLocation } from "react-router-dom";
-import { FaMoon } from 'react-icons/fa' 
 import { AiOutlineSearch } from 'react-icons/ai'
+import { Logo } from "./Logo";
 
 export default function Header() {
   const path = useLocation().pathname
   return (
     <Navbar className="border-b-2" fluid rounded>
-      <Link to="/" className="self-center whitespace-nowrap text-sm sm:text-xl font-semibold dark:text-white">
-        <span className="px-2 py-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-600 rounded-lg text-white">CapuchinoJT's</span>{' '}
-        Blog
-      </Link>
+      <Logo />
       <form>
         <TextInput id="search" type="text" placeholder="Search..." rightIcon={AiOutlineSearch} className="hidden lg:inline"/>
       </form>
@@ -18,9 +15,10 @@ export default function Header() {
         <AiOutlineSearch className=""/>
       </Button>
       <div className="flex gap-2 md:order-2">
-        <Button className="w-12 h-10 hidden sm:inline" color="gray" pill>
+        {/* <Button className="w-12 h-10 hidden sm:inline" color="gray" pill>
           <FaMoon />
-        </Button>
+        </Button> */}
+        <DarkThemeToggle className="w-12 h-10 hidden sm:inline" />
         <Link to='/sign-in'>
           <Button gradientDuoTone="purpleToBlue" outline>
             Sign In
