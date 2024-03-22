@@ -3,12 +3,12 @@ import { Link, useNavigate } from "react-router-dom"
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
 import * as yup from 'yup'
 
-import { InputField } from "../components/InputField"
-import { useDispatch, useSelector } from "react-redux"
-import { addNewUser } from "../features/signUp/signUpSlice"
-import { STATUS_SUCCEEDED } from "../services/constant/status.constants"
+import { InputField } from "@/components/InputField"
+import { addNewUser } from "@/services/redux/signUp/signUpSlice" 
+import { STATUS_SUCCEEDED } from "@/services/constant/status.constants"
 
 const userInfoSchema = yup.object({
   username: yup.string().required(),

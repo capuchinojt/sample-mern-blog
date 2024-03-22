@@ -1,7 +1,7 @@
 import { Footer } from "flowbite-react"
 import { BsFacebook, BsInstagram, BsTwitter, BsGithub, BsDribbble } from 'react-icons/bs'
 
-import { Logo } from "./Logo"
+import { Logo } from "@/components/Logo"
 
 export const FooterPage = () => {
   return (

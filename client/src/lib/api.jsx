@@ -1,4 +1,4 @@
-import { Api } from "../utils/api";
+import { Api } from "@/utils/api";
 
 // Lấy dữ liệu
 export const fetchData = async (url, config = {}) => {
@@ -8,20 +8,15 @@ export const fetchData = async (url, config = {}) => {
 
 // Gửi dữ liệu (POST)
 export const postData = async (url, data, config = {}) => {
-  try {
-    const response = await Api.post(url, JSON.stringify(data), {
-      headers: {
-        'Content-Type': 'application/json',
-        "Access-Control-Allow-Origin": "*"
-      },
-      ...config
-    });
-    console.table(`postData[${url}] - response: `, response)
-    return response
-  } catch (error) {
-    console.table(`postData[${url}] - error: `, error?.response?.data)
-    return error?.response?.data 
-  }
+  const response = await Api.post(url, JSON.stringify(data), {
+    headers: {
+      'Content-Type': 'application/json',
+      "Access-Control-Allow-Origin": "*"
+    },
+    ...config
+  });
+  console.table(`postData[${url}] - response: `, response)
+  return response
 }
 
 // Cập nhật dữ liệu (PUT)

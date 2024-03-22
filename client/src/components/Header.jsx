@@ -1,10 +1,22 @@
-import { Button, DarkThemeToggle, Navbar, TextInput } from "flowbite-react";
-import { Link, useLocation } from "react-router-dom";
+import { Button, DarkThemeToggle, Navbar, TextInput } from "flowbite-react"
+import { Link, useLocation } from "react-router-dom"
 import { AiOutlineSearch } from 'react-icons/ai'
-import { Logo } from "./Logo";
+import { useEffect, useState } from "react"
+
+import { Logo } from "@/components/Logo"
+import { useUserInfo } from "@/services/redux/signIn/signInSelector"
 
 export default function Header() {
   const path = useLocation().pathname
+  const userInfo = useUserInfo()
+  const [username, setUsername] = useState('')
+
+  useEffect(() => {
+    if (userInfo) {
+      setUsername(userInfo.username)
+    }
+  }, [userInfo])
+
   return (
     <Navbar className="border-b-2" fluid rounded>
       <Logo />
@@ -19,11 +31,11 @@ export default function Header() {
           <FaMoon />
         </Button> */}
         <DarkThemeToggle className="w-12 h-10 hidden sm:inline" />
-        <Link to='/sign-in'>
+        {username ? <span>{username}</span> : <Link to='/sign-in'>
           <Button gradientDuoTone="purpleToBlue" outline>
             Sign In
           </Button>
-        </Link>
+        </Link>}
         <Navbar.Toggle />
       </div>
       <Navbar.Collapse>

@@ -1,7 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
-import { postData } from "../../lib/api"
-import { STATUS_IDLE, STATUS_LOADING, STATUS_SUCCEEDED, STATUS_FAILED } from "../../services/constant/status.constants";
 
+import { postData } from "@/lib/api"; 
+import {
+  STATUS_IDLE, STATUS_LOADING, STATUS_SUCCEEDED, STATUS_FAILED
+} from "@/services/constant/status.constants"
 
 const initialState = {
   loading: false,

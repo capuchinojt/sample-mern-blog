@@ -1,9 +1,9 @@
-import About from "../pages/About"
-import Dashboard from "../pages/Dashboard"
-import Home from "../pages/Home"
-import Projects from "../pages/Projects"
-import SignIn from "../pages/SignIn"
-import SignUp from "../pages/SignUp"
+import About from "@/pages/About"
+import Dashboard from "@/pages/Dashboard"
+import Home from "@/pages/Home"
+import Projects from "@/pages/Projects"
+import SignIn from "@/pages/SignIn"
+import SignUp from "@/pages/SignUp"
 
 export const pages = [
   {path: '/', element:<Home />, key: 'Home'},
