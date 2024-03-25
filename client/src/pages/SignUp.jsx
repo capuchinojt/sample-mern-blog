@@ -17,7 +17,6 @@ const userInfoSchema = yup.object({
   password: yup.string().required()
 })
 
-
 export default function SignUp() {
   const {register, handleSubmit, formState: {errors}} = useForm({
     resolver: yupResolver(userInfoSchema)
