@@ -11,10 +11,10 @@ import { useDispatch } from "react-redux"
 import { toggleTheme } from "@/services/redux/theme/themeSlice"
 
 export default function Header() {
+  const dispatch = useDispatch()
   const path = useLocation().pathname
   const userInfo = useUserInfo()
   const theme = useTheme()
-  const dispatch = useDispatch()
 
   return (
     <Navbar className="border-b-2" fluid rounded>
