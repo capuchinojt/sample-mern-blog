@@ -82,8 +82,30 @@
 
 ### 11. Install react-hook-form, yup to handle form
 ### Install axios to call api
+[react-hook-form](https://react-hook-form.com/get-started#Quickstart)
+
 	=> npm i react-hook-form yup axios
-	- Why?
+	***- Why react-hook-form?
+	react-hook-form is a React library designed for managing forms with high performance and ease of use. Here's a summary of its key advantages:
+
+	* High Performance: It optimizes performance by minimizing re-renders. This is achieved through the use of uncontrolled components with Refs, making it efficient for large and complex forms.
+
+	* Ease of Use: The library is built to simplify form building and management. It offers a clear and understandable API, reducing the need for boilerplate code.
+
+	* Easy Integration with UI Libraries: react-hook-form can be easily integrated with popular UI libraries, facilitating smooth and quick UI development.
+
+	* Simple and Powerful Validation: It provides strong validation mechanisms with high customization. Validating data inputs with simple to complex rules is straightforward, including the ability to use external validation libraries like Yup.
+
+	* Automatic Data Collection: The library automates data collection from form fields upon submission, saving time and effort.
+
+	* Effortless Form State Management: Managing form states, including errors, input values, and submit states, is easy and intuitive.
+
+### 12. Install vite-jsconfig-paths to config alias when import module
+
+### 13. Install redux-persist to store redux state into local storage
+
+### 14. Install firebase to handle signIn and signUp with google
+	
 
 ### HEADER
  - Web Title to back Homepage
