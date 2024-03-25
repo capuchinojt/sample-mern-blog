@@ -1,7 +1,6 @@
-import { Button, DarkThemeToggle, Navbar, TextInput } from "flowbite-react"
+import { Avatar, Button, DarkThemeToggle, Dropdown, DropdownDivider, DropdownHeader, DropdownItem, Navbar, TextInput } from "flowbite-react"
 import { Link, useLocation } from "react-router-dom"
 import { AiOutlineSearch } from 'react-icons/ai'
-import { useEffect, useState } from "react"
 
 import { Logo } from "@/components/Logo"
 import { useUserInfo } from "@/services/redux/signIn/signInSelector"
@@ -9,13 +8,6 @@ import { useUserInfo } from "@/services/redux/signIn/signInSelector"
 export default function Header() {
   const path = useLocation().pathname
   const userInfo = useUserInfo()
-  const [username, setUsername] = useState('')
-
-  useEffect(() => {
-    if (userInfo) {
-      setUsername(userInfo.username)
-    }
-  }, [userInfo])
 
   return (
     <Navbar className="border-b-2" fluid rounded>
@@ -31,7 +23,19 @@ export default function Header() {
           <FaMoon />
         </Button> */}
         <DarkThemeToggle className="w-12 h-10 hidden sm:inline" />
-        {username ? <span>{username}</span> : <Link to='/sign-in'>
+        {userInfo ? (
+          <Dropdown arrowIcon={false} inline label={<Avatar alt='user' img={userInfo.profilePicture} rounded />}>
+            <DropdownHeader>
+              <span className="block text-sm">@{userInfo.username}</span>
+              <span className="block text-sm font-medium truncate">@{userInfo.email}</span>
+            </DropdownHeader>
+            <Link to="/dashboard?tab=profile">
+                <DropdownItem>Profile</DropdownItem>
+            </Link>
+            <DropdownDivider />
+            <DropdownItem>Sign Out</DropdownItem>
+          </Dropdown>
+        ) : <Link to='/sign-in'>
           <Button gradientDuoTone="purpleToBlue" outline>
             Sign In
           </Button>
