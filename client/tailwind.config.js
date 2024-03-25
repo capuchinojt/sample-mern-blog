@@ -7,12 +7,12 @@ export default {
   ],
   theme: {
     extend: {
-      backgroundColor: {
-        'not-dark': 'var(--bg-light)',
-      },
-      textColor: {
-        'not-dark': 'var(--text-light)',
-      },
+      // backgroundColor: {
+      //   'not-dark': 'var(--bg-light)',
+      // },
+      // textColor: {
+      //   'not-dark': 'var(--text-light)',
+      // },
     },
   },
   darkMode: 'class',

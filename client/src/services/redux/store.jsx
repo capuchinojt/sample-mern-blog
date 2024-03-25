@@ -4,6 +4,7 @@ import storage from 'redux-persist/lib/storage'
 
 import signUpReducer from '@/services/redux/signUp/signUpSlice'
 import signInReducer from '@/services/redux/signIn/signInSlice'
+import themeReducer from '@/services/redux/theme/themeSlice'
 import persistStore from 'redux-persist/es/persistStore'
 
 const persistConfig = {
@@ -14,7 +15,8 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   signUp: signUpReducer,
-  signIn: signInReducer
+  signIn: signInReducer,
+  theme: themeReducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

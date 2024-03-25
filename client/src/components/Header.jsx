@@ -1,13 +1,20 @@
-import { Avatar, Button, DarkThemeToggle, Dropdown, DropdownDivider, DropdownHeader, DropdownItem, Navbar, TextInput } from "flowbite-react"
+import { Avatar, Button, Dropdown, DropdownDivider, DropdownHeader, DropdownItem, Navbar, TextInput } from "flowbite-react"
 import { Link, useLocation } from "react-router-dom"
 import { AiOutlineSearch } from 'react-icons/ai'
+import { FaMoon, FaSun } from 'react-icons/fa'
 
 import { Logo } from "@/components/Logo"
 import { useUserInfo } from "@/services/redux/signIn/signInSelector"
+import { useTheme } from "@/services/redux/theme/themeSelector"
+import { themeTypes } from "@/constant/style.constants"
+import { useDispatch } from "react-redux"
+import { toggleTheme } from "@/services/redux/theme/themeSlice"
 
 export default function Header() {
   const path = useLocation().pathname
   const userInfo = useUserInfo()
+  const theme = useTheme()
+  const dispatch = useDispatch()
 
   return (
     <Navbar className="border-b-2" fluid rounded>
@@ -19,15 +26,15 @@ export default function Header() {
         <AiOutlineSearch className=""/>
       </Button>
       <div className="flex gap-2 md:order-2">
-        {/* <Button className="w-12 h-10 hidden sm:inline" color="gray" pill>
-          <FaMoon />
-        </Button> */}
-        <DarkThemeToggle className="w-12 h-10 hidden sm:inline" />
+        <Button className="w-12 h-10 hidden sm:inline" color="gray" pill onClick={() => dispatch(toggleTheme())}>
+          {theme === themeTypes.LIGHT ? <FaMoon /> : <FaSun />}
+        </Button>
+        {/* <DarkThemeToggle className="hidden sm:inline mr-2"/> */}
         {userInfo ? (
           <Dropdown arrowIcon={false} inline label={<Avatar alt='user' img={userInfo.profilePicture} rounded />}>
             <DropdownHeader>
               <span className="block text-sm">@{userInfo.username}</span>
-              <span className="block text-sm font-medium truncate">@{userInfo.email}</span>
+              <span className="block text-sm font-medium truncate">{userInfo.email}</span>
             </DropdownHeader>
             <Link to="/dashboard?tab=profile">
                 <DropdownItem>Profile</DropdownItem>

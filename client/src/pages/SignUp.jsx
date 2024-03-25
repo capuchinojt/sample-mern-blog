@@ -8,7 +8,7 @@ import * as yup from 'yup'
 
 import { InputField } from "@/components/InputField"
 import { addNewUser } from "@/services/redux/signUp/signUpSlice" 
-import { STATUS_SUCCEEDED } from "@/services/constant/status.constants"
+import { STATUS_SUCCEEDED } from "@/constant/status.constants"
 import { OAuth } from "@/components/OAuth"
 
 const userInfoSchema = yup.object({
@@ -52,7 +52,7 @@ export default function SignUp() {
             <span className="px-2 py-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-600 rounded-lg text-white">
               CapuchinoJT{"'"}s
             </span>{" "}
-            <span className="text-black">Blog</span>
+            Blog
           </Link>
           <p className="text-sm mt-5">
             This is a demo project. You can sign up with your email and password or with Google.
@@ -64,7 +64,7 @@ export default function SignUp() {
             <InputField id="username" label="Your Username" type="text" registerControl={register('username')} errors={errors} />
             <InputField id="email" label="Your Email" type="text" registerControl={register('email')} errors={errors} />
             <InputField id="password" label="Your Password" type="password" registerControl={register('password')} errors={errors} />
-            <Button gradientDuoTone='purpleToPink' type="submit" disabled={isLoading}>
+            <Button gradientDuoTone='purpleToPink' type="submit" disabled={isLoading} color="primary">
               {
                 isLoading ? <>
                   <Spinner size='sm' />

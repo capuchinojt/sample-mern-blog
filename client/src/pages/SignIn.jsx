@@ -6,7 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
 import * as yup from 'yup'
 
-import { STATUS_SUCCEEDED } from "@/services/constant/status.constants"
+import { STATUS_SUCCEEDED } from "@/constant/status.constants"
 import { InputField } from "@/components/InputField"
 import { signInRequest } from "@/services/redux/signIn/signInSlice"
 import { OAuth } from "@/components/OAuth"
