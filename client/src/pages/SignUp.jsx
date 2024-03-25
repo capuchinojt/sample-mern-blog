@@ -9,6 +9,7 @@ import * as yup from 'yup'
 import { InputField } from "@/components/InputField"
 import { addNewUser } from "@/services/redux/signUp/signUpSlice" 
 import { STATUS_SUCCEEDED } from "@/services/constant/status.constants"
+import { OAuth } from "@/components/OAuth"
 
 const userInfoSchema = yup.object({
   username: yup.string().required(),
@@ -71,6 +72,7 @@ export default function SignUp() {
                 </> : 'Sign Up'
               }
             </Button>
+            <OAuth />
             {error && <Alert color="failure" className="items-center text-center"><span className="font-bold">Sign-up failed.</span><br/> Please check your details and try again.</Alert>}
           </form>
           <div className="flex gap-2 text-sm mt-5">

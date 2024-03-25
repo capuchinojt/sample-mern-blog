@@ -9,6 +9,7 @@ import * as yup from 'yup'
 import { STATUS_SUCCEEDED } from "@/services/constant/status.constants"
 import { InputField } from "@/components/InputField"
 import { signInRequest } from "@/services/redux/signIn/signInSlice"
+import { OAuth } from "@/components/OAuth"
 
 const userInfoSignInSchema = yup.object({
   email: yup.string().email().required(),
@@ -68,6 +69,7 @@ export default function SignIn() {
                 </> : 'Sign Up'
               }
             </Button>
+            <OAuth />
             {error && <Alert color="failure" className="items-center text-center"><span className="font-bold">Sign-up failed.</span> {error?.message ? error.message : "Please check your details."}</Alert>}
           </form>
           <div className="flex gap-2 text-sm mt-5">
