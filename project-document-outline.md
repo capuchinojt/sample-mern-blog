@@ -105,7 +105,14 @@
 ### 13. Install redux-persist to store redux state into local storage
 
 ### 14. Install firebase to handle signIn and signUp with google
-	
+
+### 15. Use firebase storage to store images and install react-circular-progressbar to handle progressbar while uploading
+[react-circular-progressbar](https://www.npmjs.com/package/react-circular-progressbar)
+
+
+
+
+### _______________________________________________________ ###	
 
 ### HEADER
  - Web Title to back Homepage
