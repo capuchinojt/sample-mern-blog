@@ -4,6 +4,11 @@ import axios from 'axios';
 const apiInstance = axios.create({
   baseURL: 'http://localhost:5555', // Thay thế với baseURL của bạn
   timeout: 10000, // Đặt timeout là 10 giây
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+    "Access-Control-Allow-Origin": "*"
+  }
 });
 
 // Thêm một request interceptor

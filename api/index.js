@@ -11,7 +11,12 @@ import { handleError } from "./controllers/error.controller.js"
 const PORT = process.env.PORT || 9999
 const app = express()
 app.use(express.json())
-app.use(cors())
+app.use(
+  cors({
+      credentials: true,
+      origin: "http://localhost:5173",
+  })
+);
 app.use(cookieParser())
 
 app.listen(PORT, () => {
