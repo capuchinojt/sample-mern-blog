@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 
-import { postData } from "@/lib/api"; 
+import { postData, updateData } from "@/lib/api"; 
 import {
   STATUS_IDLE, STATUS_LOADING, STATUS_SUCCEEDED, STATUS_FAILED 
 } from "@/constant/status.constants"
@@ -30,6 +30,15 @@ export const signInWithGoogleRequest = createAsyncThunk('signInWithGoogle', asyn
   }
 })
 
+export const updateUserInfoById = createAsyncThunk('updateUserInfo', async ({userId, userInfo}, { rejectWithValue }) => {
+  try {
+    const response = await updateData(`/api/v1/user/update/${userId}`, userInfo)
+    return response
+  } catch (error) {
+    return rejectWithValue({ error: error?.response?.data})
+  }
+})
+
 const handlePending = (state) => {
   state.loading = true
   state.status = STATUS_LOADING
@@ -51,8 +60,8 @@ const handleRejected = (state, action) => {
   state.error = action.payload.error
 }
 
-export const signInSlice = createSlice({
-  name: 'signIn',
+export const userAuthSlice = createSlice({
+  name: 'userAuth',
   initialState,
   reducers: {
   },
@@ -64,9 +73,12 @@ export const signInSlice = createSlice({
       .addCase(signInWithGoogleRequest.pending, handlePending)
       .addCase(signInWithGoogleRequest.fulfilled, handleFulfilled)
       .addCase(signInWithGoogleRequest.rejected, handleRejected)
+      .addCase(updateUserInfoById.pending, handlePending)
+      .addCase(updateUserInfoById.fulfilled, handleFulfilled)
+      .addCase(updateUserInfoById.rejected, handleRejected)
   }
 })
 
-export const { signIn } = signInSlice.actions
+export const { userAuth } = userAuthSlice.actions
 
-export default signInSlice.reducer
+export default userAuthSlice.reducer

@@ -4,7 +4,7 @@ import { AiOutlineSearch } from 'react-icons/ai'
 import { FaMoon, FaSun } from 'react-icons/fa'
 
 import { Logo } from "@/components/Logo"
-import { useUserInfo } from "@/services/redux/signIn/signInSelector"
+import { useUserInfo } from "@/services/redux/userAuth/userAuthSelector"
 import { useTheme } from "@/services/redux/theme/themeSelector"
 import { themeTypes } from "@/constant/style.constants"
 import { useDispatch } from "react-redux"

@@ -8,7 +8,7 @@ import * as yup from 'yup'
 
 import { STATUS_SUCCEEDED } from "@/constant/status.constants"
 import { InputField } from "@/components/InputField"
-import { signInRequest } from "@/services/redux/signIn/signInSlice"
+import { signInRequest } from "@/services/redux/userAuth/userAuthSlice"
 import { OAuth } from "@/components/OAuth"
 
 const userInfoSignInSchema = yup.object({
@@ -24,7 +24,7 @@ export default function SignIn() {
   const navigate = useNavigate()
 
   const [isLoading, setIsLoading] = useState(false)
-  const {loading, error, status}  = useSelector(state => state.signIn)
+  const {loading, error, status}  = useSelector(state => state.userAuth)
 
   useEffect(() => {
     setIsLoading(loading)

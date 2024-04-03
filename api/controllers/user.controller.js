@@ -27,7 +27,7 @@ const checkAndUpdateUsername = async (req) => {
     if (username.includes(" ")) {
       throw new Error('Username can not contain spaces.')
     }
-    if (!username.match(/^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]+$/)) {
+    if (!username.match(/^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z0-9]+$/)) {
       throw new Error('Username must contain both letters and numbers.')
     }
 

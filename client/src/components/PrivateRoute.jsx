@@ -1,4 +1,4 @@
-import { useUserInfo } from "@/services/redux/signIn/signInSelector"
+import { useUserInfo } from "@/services/redux/userAuth/userAuthSelector"
 import { Navigate, Outlet } from "react-router-dom"
 
 export const PrivateRoute = () => {
