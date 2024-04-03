@@ -2,8 +2,15 @@ import PropTypes from 'prop-types'
 import { Label, TextInput } from "flowbite-react"
 
 export const InputField = (props) => {
-  const {id, label, type, placeholder, registerControl, errors, defaultValue} = props
+  const {id, label, type = "text", placeholder, registerControl, errors, defaultValue, handleChangeData} = props
   const errorMessage = errors[id]?.message ?? ''
+
+  if (typeof handleChangeData === 'function') {
+    registerControl.onChange = (e) => {
+      handleChangeData(e.target.value)
+    }    
+  }
+
   return (
     <div> 
       {label && <Label htmlFor={id} color={'black'} value={label} />}
@@ -19,9 +26,6 @@ InputField.propTypes = {
   placeholder: PropTypes.string,
   registerControl: PropTypes.shape({}),
   errors: PropTypes.shape({}),
-  defaultValue: PropTypes.string
+  defaultValue: PropTypes.string,
+  handleChangeData: PropTypes.func
 }
-
-InputField.defaultProps = {
-  type: 'text'
-};

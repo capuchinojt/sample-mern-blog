@@ -6,10 +6,13 @@ import { useEffect, useRef, useState } from "react"
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage'
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
+import { useDispatch } from "react-redux"
 
 import { InputField } from "@/components/InputField"
-import { useUserInfo } from "@/services/redux/signIn/signInSelector"
+import { updateUserInfoById } from "@/services/redux/userAuth/userAuthSlice"
 import { app } from "@/firebase"
+import { ModalConfirm } from "./ModalConfirm"
+import { useUserInfo } from "@/services/redux/userAuth/userAuthSelector"
 
 const userInfoSchema = yup.object({
   username: yup.string().required(),
@@ -26,7 +29,11 @@ export const DashProfile = () => {
   const [imageFileUrl, setImageFileUrl] = useState(null)
   const [imageFileUploadProgress, setImageFileUploadProgress] = useState(null)
   const [imageFileUploadError, setImageFileUploadError] = useState(null)
+  const [isOpenModal, setIsOpenModal] = useState(false)
+  const [dataToUpdate, setDataToUpdate] = useState(null)
+  const [isDataChange, setIsDataChange] = useState(false)
   const filePickerRef = useRef()
+  const dispatch = useDispatch()
 
   useEffect(() => {
     imageFile && uploadImage()
@@ -68,6 +75,24 @@ export const DashProfile = () => {
     )
   }
 
+  const handleOpenModal = (toggleOpenValue) => {
+    setIsOpenModal(toggleOpenValue)
+  }
+
+  const handleUpdateUserInfo = () => {
+    const userIdToUpdate = currentUser?._id
+    if (userIdToUpdate && dataToUpdate) {
+      const data = {
+        userId: currentUser?._id,
+        userInfo: {
+          ...dataToUpdate,
+          ...(imageFileUrl ? { profilePicture: imageFileUrl } : {})
+        }
+      }
+      dispatch(updateUserInfoById(data))
+    }
+  }
+
   const handleImageChange = (e) => {
     const eleFile = e.target.files[0]
     if (eleFile) {
@@ -77,8 +102,23 @@ export const DashProfile = () => {
     }
   }
 
+  const checkDataChange = (dataInput) => {
+    if (dataInput) {
+      const { username, email, password} = dataInput
+      if (username !== currentUser.username || email !== currentUser.email || password.trim().length > 0 || (imageFileUrl && currentUser.profilePicture !== imageFileUrl)) {
+        console.log('checkDataChange', {currentUser, username, email, password, imageFileUrl})
+        return true
+      }
+    }
+    return false
+  }
+
   const onSubmit = (data) => {
     console.log('Dash Profile: ', data)
+    if (checkDataChange(data)) {
+      setDataToUpdate(data)
+      setIsOpenModal(true)
+    }
   }
 
   const renderCircularProgressBar = (percentage) => {
@@ -111,10 +151,17 @@ export const DashProfile = () => {
     )
   }
 
+  const checkChangeData = (data) => {
+    if (data.trim()) {
+      setIsDataChange(true)
+    }
+  }
+
   return (
     currentUser && (
       <div className="max-w-lg mx-auto p-3 w-full">
         <h1 className="my-7 text-center font-semibold text-3xl">Profile</h1>
+        { isOpenModal && <ModalConfirm isOpenModal toggleModalFunc={handleOpenModal} updateUserInfoFunc={handleUpdateUserInfo}/>}
         <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
           <div className="relative w-32 h-32 self-center cursor-pointer shadow-sm overflow-hidden rounded-full" onClick={() => filePickerRef.current.click()}>
             {imageFileUploadProgress && renderCircularProgressBar(imageFileUploadProgress)}
@@ -122,10 +169,10 @@ export const DashProfile = () => {
           </div>
           { imageFileUploadError && (<Alert color='failure'> <span className="font-semibold">{imageFileUploadError}</span> </Alert>) }
           <input type="file" hidden accept="image/*" ref={filePickerRef} onChange={handleImageChange} />
-          <InputField id="username" type="text" registerControl={register('username')} errors={errors} defaultValue={currentUser.username} />
-          <InputField id="email" type="text" registerControl={register('email')} errors={errors} defaultValue={currentUser.email} />
-          <InputField id="password" type="password" registerControl={register('password')} errors={errors} placeholder="Password" />
-          <Button type="submit" gradientDuoTone="purpleToBlue" outline>
+          <InputField handleChangeData={checkChangeData} id="username" type="text" registerControl={register('username')} errors={errors} defaultValue={currentUser.username} />
+          <InputField handleChangeData={checkChangeData} id="email" type="text" registerControl={register('email')} errors={errors} defaultValue={currentUser.email} />
+          <InputField handleChangeData={checkChangeData} id="password" type="password" registerControl={register('password')} errors={errors} placeholder="Password" />
+          <Button disabled={!isDataChange} type="submit" gradientDuoTone="purpleToBlue" outline>
             Update
           </Button>
         </form>
