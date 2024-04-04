@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form"
-import { Alert, Button } from "flowbite-react"
+import { Alert, Button, Spinner } from "flowbite-react"
 import * as yup from 'yup'
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useEffect, useRef, useState } from "react"
@@ -9,10 +9,12 @@ import 'react-circular-progressbar/dist/styles.css';
 import { useDispatch } from "react-redux"
 
 import { InputField } from "@/components/InputField"
-import { updateUserInfoById } from "@/services/redux/userAuth/userAuthSlice"
+import { setUserInfo } from "@/services/redux/userAuth/userAuthSlice"
 import { app } from "@/firebase"
 import { ModalConfirm } from "./ModalConfirm"
 import { useUserInfo } from "@/services/redux/userAuth/userAuthSelector"
+import { useMutation } from "@tanstack/react-query"
+import { updateUserInfoById } from "@/api/authApi"
 
 const userInfoSchema = yup.object({
   username: yup.string().required(),
@@ -32,12 +34,30 @@ export const DashProfile = () => {
   const [isOpenModal, setIsOpenModal] = useState(false)
   const [dataToUpdate, setDataToUpdate] = useState(null)
   const [isDataChange, setIsDataChange] = useState(false)
+  const [error, setError] = useState(null)
+  const [isShowAlert, setIsShowAlert] = useState(false)
   const filePickerRef = useRef()
   const dispatch = useDispatch()
 
   useEffect(() => {
     imageFile && uploadImage()
   }, [imageFile])
+
+  const updateUserInfoMutation = useMutation({
+    mutationFn: (data) => updateUserInfoById(data),
+    onSuccess: (data) => {
+      dispatch(setUserInfo(data))
+      setIsDataChange(false)
+      setIsShowAlert(true)
+    },
+    onError: (res) => {
+      console.error('signIn error: ', res)
+      setError(res?.response?.data || res)
+      setIsDataChange(false)
+      setIsShowAlert(true)
+    }
+  })
+  const { isPending, isSuccess, isError } = updateUserInfoMutation
 
   const uploadImage = async () => {
     console.info('Uploading image...')
@@ -89,7 +109,7 @@ export const DashProfile = () => {
           ...(imageFileUrl ? { profilePicture: imageFileUrl } : {})
         }
       }
-      dispatch(updateUserInfoById(data))
+      updateUserInfoMutation.mutate(data)
     }
   }
 
@@ -106,7 +126,6 @@ export const DashProfile = () => {
     if (dataInput) {
       const { username, email, password} = dataInput
       if (username !== currentUser.username || email !== currentUser.email || password.trim().length > 0 || (imageFileUrl && currentUser.profilePicture !== imageFileUrl)) {
-        console.log('checkDataChange', {currentUser, username, email, password, imageFileUrl})
         return true
       }
     }
@@ -152,6 +171,7 @@ export const DashProfile = () => {
   }
 
   const checkChangeData = (data) => {
+    setIsShowAlert(false)
     if (data.trim()) {
       setIsDataChange(true)
     }
@@ -172,10 +192,23 @@ export const DashProfile = () => {
           <InputField handleChangeData={checkChangeData} id="username" type="text" registerControl={register('username')} errors={errors} defaultValue={currentUser.username} />
           <InputField handleChangeData={checkChangeData} id="email" type="text" registerControl={register('email')} errors={errors} defaultValue={currentUser.email} />
           <InputField handleChangeData={checkChangeData} id="password" type="password" registerControl={register('password')} errors={errors} placeholder="Password" />
-          <Button disabled={!isDataChange} type="submit" gradientDuoTone="purpleToBlue" outline>
-            Update
+          <Button disabled={!isDataChange || isPending} type="submit" gradientDuoTone="purpleToBlue" outline>
+            {
+              isPending ? <>
+                <Spinner size='sm' />
+                  <span className="pl-3">Loading...</span>
+              </> : 'Update'
+            }
           </Button>
         </form>
+        {
+          isShowAlert && (
+            <div className="mt-3">
+              {isError && <Alert color="failure" className="items-center text-center"><span className="font-bold">Update failed.</span><br/> { error?.message ? error.message : 'Please check your details and try again.'}</Alert>}
+              {isSuccess && <Alert color="success" className="items-center text-center"><span className="font-bold">Update successfully.</span><br/> Your changes have been successfully saved! </Alert>}
+            </div>
+          )
+        }
         <div className="text-red-500 flex justify-between mt-5">
           <span className="cursor-pointer">Delete Account</span>
           <span className="cursor-pointer">Sign Out</span>

@@ -1,15 +1,16 @@
-import { useDispatch, useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
 import { Alert, Button, Spinner } from "flowbite-react"
-import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
 import * as yup from 'yup'
 
-import { STATUS_SUCCEEDED } from "@/constant/status.constants"
 import { InputField } from "@/components/InputField"
-import { signInRequest } from "@/services/redux/userAuth/userAuthSlice"
+import { signInRequest } from "@/api/authApi"
 import { OAuth } from "@/components/OAuth"
+import { useMutation } from "@tanstack/react-query"
+import { setUserInfo } from "@/services/redux/userAuth/userAuthSlice"
+import { useState } from "react"
 
 const userInfoSignInSchema = yup.object({
   email: yup.string().email().required(),
@@ -22,20 +23,21 @@ export default function SignIn() {
   })
   const dispatch = useDispatch()
   const navigate = useNavigate()
-
-  const [isLoading, setIsLoading] = useState(false)
-  const {loading, error, status}  = useSelector(state => state.userAuth)
-
-  useEffect(() => {
-    setIsLoading(loading)
-    if (status === STATUS_SUCCEEDED && !error) {
+  const [error, setError] = useState(null)
+  const mutationSignIn = useMutation({
+    mutationFn: (data) => signInRequest(data),
+    onSuccess: (res) => {
+      dispatch(setUserInfo(res))
       navigate('/')
+    },
+    onError: (res) => {
+      console.error('signIn error: ', res)
+      setError(res?.response?.data || res)
     }
-  }, [loading, status])
-
+  })
+  const { isPending, isError } = mutationSignIn
   const onSubmit = data => {
-    console.table('data: ', data)
-    dispatch(signInRequest(data))
+    mutationSignIn.mutate(data)
   }
 
   return (
@@ -61,16 +63,16 @@ export default function SignIn() {
           <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
             <InputField id="email" label="Your Email" type="text" registerControl={register('email')} errors={errors} />
             <InputField id="password" label="Your Password" type="password" registerControl={register('password')} errors={errors} />
-            <Button gradientDuoTone='purpleToPink' type="submit" disabled={isLoading}>
+            <Button gradientDuoTone='purpleToPink' type="submit" disabled={isPending}>
               {
-                isLoading ? <>
+                isPending ? <>
                   <Spinner size='sm' />
                   <span className="pl-3">Loading...</span>
                 </> : 'Sign Up'
               }
             </Button>
             <OAuth />
-            {error && <Alert color="failure" className="items-center text-center"><span className="font-bold">Sign-up failed.</span> {error?.message ? error.message : "Please check your details."}</Alert>}
+            {isError && <Alert color="failure" className="items-center text-center"><span className="font-bold">Sign-up failed.</span> {error?.message ? error.message : "Please check your details."}</Alert>}
           </form>
           <div className="flex gap-2 text-sm mt-5">
             <span>Have an account?</span>

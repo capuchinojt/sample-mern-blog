@@ -9,7 +9,7 @@ export const fetchData = async (url, config = {}) => {
 // Gửi dữ liệu (POST)
 export const postData = async (url, data, config = {}) => {
   const response = await Api.post(url, JSON.stringify(data), config);
-  console.table(`postData[${url}] - response: `, response)
+  // console.table(`postData[${url}] - response: `, response)
   return response
 }
 

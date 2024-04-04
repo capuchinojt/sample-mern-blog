@@ -5,7 +5,7 @@ export const InputField = (props) => {
   const {id, label, type = "text", placeholder, registerControl, errors, defaultValue, handleChangeData} = props
   const errorMessage = errors[id]?.message ?? ''
 
-  if (typeof handleChangeData === 'function') {
+  if (registerControl && typeof handleChangeData === 'function') {
     registerControl.onChange = (e) => {
       handleChangeData(e.target.value)
     }    

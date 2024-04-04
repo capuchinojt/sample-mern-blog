@@ -2,14 +2,13 @@ import { Alert, Button, Spinner } from "flowbite-react"
 import { Link, useNavigate } from "react-router-dom"
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useEffect, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
+import { useMutation } from "@tanstack/react-query"
 import * as yup from 'yup'
 
 import { InputField } from "@/components/InputField"
-import { addNewUser } from "@/services/redux/signUp/signUpSlice" 
-import { STATUS_SUCCEEDED } from "@/constant/status.constants"
 import { OAuth } from "@/components/OAuth"
+import { signUp } from "@/api/authApi"
+
 
 const userInfoSchema = yup.object({
   username: yup.string().required(),
@@ -21,22 +20,17 @@ export default function SignUp() {
   const {register, handleSubmit, formState: {errors}} = useForm({
     resolver: yupResolver(userInfoSchema)
   })
-  const [isLoading, setIsLoading] = useState(false)
-  const dispatch = useDispatch()
-  const result = useSelector(state => state.signUp)
-  const {loading, error, status} = result
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    setIsLoading(loading)
-    if (status === STATUS_SUCCEEDED) {
+  const signUpMutation = useMutation({
+    mutationFn: (userInfo) => signUp(userInfo),
+    onSuccess: () => {
       navigate('/sign-in')
     }
-  }, [loading, status])
+  })
+  const navigate = useNavigate()
+  const { isPending, isError } = signUpMutation
 
   const onSubmit = data => {
-    console.table('data: ', data)
-    dispatch(addNewUser(data))
+    signUpMutation.mutate(data)
   }
 
   return (
@@ -63,16 +57,16 @@ export default function SignUp() {
             <InputField id="username" label="Your Username" type="text" registerControl={register('username')} errors={errors} />
             <InputField id="email" label="Your Email" type="text" registerControl={register('email')} errors={errors} />
             <InputField id="password" label="Your Password" type="password" registerControl={register('password')} errors={errors} />
-            <Button gradientDuoTone='purpleToPink' type="submit" disabled={isLoading} color="primary">
+            <Button gradientDuoTone='purpleToPink' type="submit" disabled={isPending} color="primary">
               {
-                isLoading ? <>
+                isPending ? <>
                   <Spinner size='sm' />
                   <span className="pl-3">Loading...</span>
                 </> : 'Sign Up'
               }
             </Button>
             <OAuth />
-            {error && <Alert color="failure" className="items-center text-center"><span className="font-bold">Sign-up failed.</span><br/> Please check your details and try again.</Alert>}
+            {isError && <Alert color="failure" className="items-center text-center"><span className="font-bold">Sign-up failed.</span><br/> Please check your details and try again.</Alert>}
           </form>
           <div className="flex gap-2 text-sm mt-5">
             <span>Have an account?</span>

@@ -4,10 +4,18 @@ import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth'
 import { useDispatch } from "react-redux"
 
 import { app } from "@/firebase"
-import { signInWithGoogleRequest } from "@/services/redux/userAuth/userAuthSlice"
+import { useMutation } from "@tanstack/react-query"
+import { signInWithGoogleRequest } from "@/api/authApi"
+import { setUserInfo } from "@/services/redux/userAuth/userAuthSlice"
 
 export const OAuth = () => {
   const dispatch = useDispatch()
+  const mutationSignInWithGoogle = useMutation({
+    mutationFn: (data) => signInWithGoogleRequest(data),
+    onSuccess: async (res) => {
+      dispatch(setUserInfo(res))
+    }
+  })
 
   const handleGoogleAuthClick = async () => {
     const auth = getAuth(app)
@@ -22,7 +30,7 @@ export const OAuth = () => {
           email: resultFromGoogleAuth.user.email,
           googlePhotoUrl: resultFromGoogleAuth.user.photoURL
         }
-        dispatch(signInWithGoogleRequest(userInfo))
+        mutationSignInWithGoogle.mutate(userInfo)
       }
       console.info('resultFromGoogleAuth', resultFromGoogleAuth)
     } catch (error) {
@@ -31,7 +39,7 @@ export const OAuth = () => {
   }
 
   return (
-    <Button type="button" gradientDuoTone='pinkToOrange' outline onClick={handleGoogleAuthClick}>
+    <Button disabled={mutationSignInWithGoogle.isPending} type="button" gradientDuoTone='pinkToOrange' outline onClick={handleGoogleAuthClick}>
       <AiFillGoogleCircle className="w-6 h-6 mr-2" />
       Continue with Google
     </Button>
