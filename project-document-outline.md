@@ -109,7 +109,8 @@
 ### 15. Use firebase storage to store images and install react-circular-progressbar to handle progressbar while uploading
 [react-circular-progressbar](https://www.npmjs.com/package/react-circular-progressbar)
 
-
+### 16. Change from using reduxThunk, reduxToolkit to handle API state and UI state to using react-query and zustand
+	* Why? - Transitioning from Redux Thunk and Redux Toolkit to React Query and Zustand has been a strategic move to streamline state management within our project. React Query is employed for handling server state, providing efficient fetching, caching, and updating of data with minimal boilerplate. Zustand offers a simpler and more concise approach to managing UI state, enhancing code readability and maintainability. This shift aligns with my goal of simplifying state management processes, reducing code complexity, and improving overall project scalability and developer experience.
 
 
 ### _______________________________________________________ ###	

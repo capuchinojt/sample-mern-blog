@@ -1,19 +1,19 @@
 import { Button } from "flowbite-react"
 import { AiFillGoogleCircle } from "react-icons/ai"
 import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth'
-import { useDispatch } from "react-redux"
 
 import { app } from "@/firebase"
 import { useMutation } from "@tanstack/react-query"
 import { signInWithGoogleRequest } from "@/api/authApi"
-import { setUserInfo } from "@/services/redux/userAuth/userAuthSlice"
+import { userInfoStore } from "@/services/zustandStore/userStore"
 
 export const OAuth = () => {
-  const dispatch = useDispatch()
+  const setUserInfo = userInfoStore(state => state.setUserInfo)
   const mutationSignInWithGoogle = useMutation({
     mutationFn: (data) => signInWithGoogleRequest(data),
     onSuccess: async (res) => {
-      dispatch(setUserInfo(res))
+      console.log('mutationSignInWithGoogle', res)
+      setUserInfo(res)
     }
   })
 

@@ -4,17 +4,15 @@ import { AiOutlineSearch } from 'react-icons/ai'
 import { FaMoon, FaSun } from 'react-icons/fa'
 
 import { Logo } from "@/components/Logo"
-import { useUserInfo } from "@/services/redux/userAuth/userAuthSelector"
-import { useTheme } from "@/services/redux/theme/themeSelector"
 import { themeTypes } from "@/constant/style.constants"
-import { useDispatch } from "react-redux"
-import { toggleTheme } from "@/services/redux/theme/themeSlice"
+import { userInfoStore } from "@/services/zustandStore/userStore"
+import { commonStore } from "@/services/zustandStore/commonStore"
 
 export default function Header() {
-  const dispatch = useDispatch()
   const path = useLocation().pathname
-  const userInfo = useUserInfo()
-  const theme = useTheme()
+  const theme = commonStore(state => state.theme)
+  const toggleTheme = commonStore(state => state.toggleTheme)
+  const userInfo = userInfoStore(state => state.userInfo)
 
   return (
     <Navbar className="border-b-2" fluid rounded>
@@ -26,7 +24,7 @@ export default function Header() {
         <AiOutlineSearch className=""/>
       </Button>
       <div className="flex gap-2 md:order-2">
-        <Button className="w-12 h-10 hidden sm:inline" color="gray" pill onClick={() => dispatch(toggleTheme())}>
+        <Button className="w-12 h-10 hidden sm:inline" color="gray" pill onClick={() => toggleTheme()}>
           {theme === themeTypes.LIGHT ? <FaMoon /> : <FaSun />}
         </Button>
         {/* <DarkThemeToggle className="hidden sm:inline mr-2"/> */}

@@ -1,16 +1,15 @@
-import { useDispatch } from "react-redux"
 import { Alert, Button, Spinner } from "flowbite-react"
 import { Link, useNavigate } from "react-router-dom"
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useMutation } from "@tanstack/react-query"
+import { useState } from "react"
 import { useForm } from 'react-hook-form'
 import * as yup from 'yup'
 
 import { InputField } from "@/components/InputField"
 import { signInRequest } from "@/api/authApi"
 import { OAuth } from "@/components/OAuth"
-import { useMutation } from "@tanstack/react-query"
-import { setUserInfo } from "@/services/redux/userAuth/userAuthSlice"
-import { useState } from "react"
+import { userInfoStore } from "@/services/zustandStore/userStore"
 
 const userInfoSignInSchema = yup.object({
   email: yup.string().email().required(),
@@ -21,13 +20,13 @@ export default function SignIn() {
   const {register, handleSubmit, formState: {errors}} = useForm({
     resolver: yupResolver(userInfoSignInSchema)
   })
-  const dispatch = useDispatch()
   const navigate = useNavigate()
   const [error, setError] = useState(null)
+  const setUserInfo = userInfoStore((state) => state.setUserInfo)
   const mutationSignIn = useMutation({
     mutationFn: (data) => signInRequest(data),
     onSuccess: (res) => {
-      dispatch(setUserInfo(res))
+      setUserInfo(res.data)
       navigate('/')
     },
     onError: (res) => {

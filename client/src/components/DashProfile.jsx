@@ -4,17 +4,15 @@ import * as yup from 'yup'
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useEffect, useRef, useState } from "react"
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage'
-import { CircularProgressbar } from 'react-circular-progressbar';
-import 'react-circular-progressbar/dist/styles.css';
-import { useDispatch } from "react-redux"
+import { CircularProgressbar } from 'react-circular-progressbar'
+import { useMutation } from "@tanstack/react-query"
+import { app } from "@/firebase"
+import 'react-circular-progressbar/dist/styles.css'
 
 import { InputField } from "@/components/InputField"
-import { setUserInfo } from "@/services/redux/userAuth/userAuthSlice"
-import { app } from "@/firebase"
-import { ModalConfirm } from "./ModalConfirm"
-import { useUserInfo } from "@/services/redux/userAuth/userAuthSelector"
-import { useMutation } from "@tanstack/react-query"
+import { ModalConfirm } from "@/components/ModalConfirm"
 import { updateUserInfoById } from "@/api/authApi"
+import { userInfoStore } from "@/services/zustandStore/userStore"
 
 const userInfoSchema = yup.object({
   username: yup.string().required(),
@@ -26,7 +24,8 @@ export const DashProfile = () => {
   const {register, handleSubmit, formState: {errors}} = useForm({
     resolver: yupResolver(userInfoSchema)
   })
-  const currentUser = useUserInfo()
+  const currentUser = userInfoStore(state => state.userInfo)
+  const setUserInfo = userInfoStore(state => state.setUserInfo)
   const [imageFile, setImageFile] = useState(null)
   const [imageFileUrl, setImageFileUrl] = useState(null)
   const [imageFileUploadProgress, setImageFileUploadProgress] = useState(null)
@@ -37,7 +36,6 @@ export const DashProfile = () => {
   const [error, setError] = useState(null)
   const [isShowAlert, setIsShowAlert] = useState(false)
   const filePickerRef = useRef()
-  const dispatch = useDispatch()
 
   useEffect(() => {
     imageFile && uploadImage()
@@ -46,7 +44,7 @@ export const DashProfile = () => {
   const updateUserInfoMutation = useMutation({
     mutationFn: (data) => updateUserInfoById(data),
     onSuccess: (data) => {
-      dispatch(setUserInfo(data))
+      setUserInfo(data)
       setIsDataChange(false)
       setIsShowAlert(true)
     },
