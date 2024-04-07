@@ -26,7 +26,7 @@ export default function SignIn() {
   const mutationSignIn = useMutation({
     mutationFn: (data) => signInRequest(data),
     onSuccess: (res) => {
-      setUserInfo(res.data)
+      setUserInfo(res)
       navigate('/')
     },
     onError: (res) => {

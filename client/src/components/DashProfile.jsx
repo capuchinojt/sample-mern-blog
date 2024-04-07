@@ -8,10 +8,11 @@ import { CircularProgressbar } from 'react-circular-progressbar'
 import { useMutation } from "@tanstack/react-query"
 import { app } from "@/firebase"
 import 'react-circular-progressbar/dist/styles.css'
+import { useNavigate } from "react-router-dom"
 
 import { InputField } from "@/components/InputField"
 import { ModalConfirm } from "@/components/ModalConfirm"
-import { updateUserInfoById } from "@/api/authApi"
+import { deleteUserById, updateUserInfoById } from "@/api/authApi"
 import { userInfoStore } from "@/services/zustandStore/userStore"
 
 const userInfoSchema = yup.object({
@@ -24,6 +25,7 @@ export const DashProfile = () => {
   const {register, handleSubmit, formState: {errors}} = useForm({
     resolver: yupResolver(userInfoSchema)
   })
+  const navigate = useNavigate()
   const currentUser = userInfoStore(state => state.userInfo)
   const setUserInfo = userInfoStore(state => state.setUserInfo)
   const [imageFile, setImageFile] = useState(null)
@@ -33,9 +35,8 @@ export const DashProfile = () => {
   const [isOpenModal, setIsOpenModal] = useState(false)
   const [dataToUpdate, setDataToUpdate] = useState(null)
   const [isDataChange, setIsDataChange] = useState(false)
-  const [error, setError] = useState(null)
-  const [isShowAlert, setIsShowAlert] = useState(false)
   const filePickerRef = useRef()
+  const [currentNotification, setCurrentNotification] = useState(null)
 
   useEffect(() => {
     imageFile && uploadImage()
@@ -46,16 +47,41 @@ export const DashProfile = () => {
     onSuccess: (data) => {
       setUserInfo(data)
       setIsDataChange(false)
-      setIsShowAlert(true)
+      setCurrentNotification({
+        type: 'success',
+        message: 'Update successfully. Your changes have been successfully saved!'
+      })
     },
     onError: (res) => {
-      console.error('signIn error: ', res)
-      setError(res?.response?.data || res)
+      const errorMessage = (res?.response?.data || res).message
+      setCurrentNotification({
+        type: 'failure',
+        message: `Update failed. ${errorMessage || 'Please check your details and try again.'}`
+      })
       setIsDataChange(false)
-      setIsShowAlert(true)
     }
   })
-  const { isPending, isSuccess, isError } = updateUserInfoMutation
+
+  const deleteUserMutation = useMutation({
+    mutationFn: (userId) => deleteUserById(userId),
+    onSuccess: () => {
+      setCurrentNotification({
+        type: 'success',
+        message: 'Account successfully deleted'
+      })
+      setTimeout(() => {
+        localStorage.removeItem('user-storage')
+        setUserInfo(null)
+        navigate('/sign-in')
+      }, 2000)
+    },
+    onError: (res) => {
+      setCurrentNotification({
+        type: 'failure',
+        message: res.data.message
+      })
+    }
+  })
 
   const uploadImage = async () => {
     console.info('Uploading image...')
@@ -117,6 +143,7 @@ export const DashProfile = () => {
       setImageFileUploadError(null)
       setImageFile(eleFile)
       setImageFileUrl(URL.createObjectURL(eleFile))
+      setIsDataChange(true)
     }
   }
 
@@ -169,10 +196,14 @@ export const DashProfile = () => {
   }
 
   const checkChangeData = (data) => {
-    setIsShowAlert(false)
+    setCurrentNotification(null)
     if (data.trim()) {
       setIsDataChange(true)
     }
+  }
+
+  const handleDeleteUser = () => {
+    deleteUserMutation.mutate(currentUser?._id)
   }
 
   return (
@@ -190,9 +221,9 @@ export const DashProfile = () => {
           <InputField handleChangeData={checkChangeData} id="username" type="text" registerControl={register('username')} errors={errors} defaultValue={currentUser.username} />
           <InputField handleChangeData={checkChangeData} id="email" type="text" registerControl={register('email')} errors={errors} defaultValue={currentUser.email} />
           <InputField handleChangeData={checkChangeData} id="password" type="password" registerControl={register('password')} errors={errors} placeholder="Password" />
-          <Button disabled={!isDataChange || isPending} type="submit" gradientDuoTone="purpleToBlue" outline>
+          <Button disabled={!isDataChange || updateUserInfoMutation.isPending} type="submit" gradientDuoTone="purpleToBlue" outline>
             {
-              isPending ? <>
+              updateUserInfoMutation.isPending ? <>
                 <Spinner size='sm' />
                   <span className="pl-3">Loading...</span>
               </> : 'Update'
@@ -200,15 +231,16 @@ export const DashProfile = () => {
           </Button>
         </form>
         {
-          isShowAlert && (
+          currentNotification && (
             <div className="mt-3">
-              {isError && <Alert color="failure" className="items-center text-center"><span className="font-bold">Update failed.</span><br/> { error?.message ? error.message : 'Please check your details and try again.'}</Alert>}
-              {isSuccess && <Alert color="success" className="items-center text-center"><span className="font-bold">Update successfully.</span><br/> Your changes have been successfully saved! </Alert>}
+              <Alert color={currentNotification?.type} className="items-center text-center">
+                {currentNotification?.message}
+              </Alert>
             </div>
           )
         }
         <div className="text-red-500 flex justify-between mt-5">
-          <span className="cursor-pointer">Delete Account</span>
+          <span className="cursor-pointer" onClick={handleDeleteUser}>Delete Account</span>
           <span className="cursor-pointer">Sign Out</span>
         </div>
       </div>

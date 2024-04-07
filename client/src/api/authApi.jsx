@@ -1,4 +1,4 @@
-import { postData, updateData } from "@/lib/api"
+import { deleteData, postData, updateData } from "@/lib/api"
 
 export const signInRequest = async (userInfo) => {
   const response = await postData('/api/auth/signIn', userInfo)
@@ -18,5 +18,10 @@ export const signUp = async (userInfo) => {
 
 export const updateUserInfoById = async ({userId, userInfo}) => {
   const response = await updateData(`/api/v1/user/update/${userId}`, userInfo)
+  return response
+}
+
+export const deleteUserById = async (userId) => {
+  const response = await deleteData(`/api/v1/user/delete/${userId}`)
   return response
 }
