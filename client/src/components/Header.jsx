@@ -2,17 +2,26 @@ import { Avatar, Button, Dropdown, DropdownDivider, DropdownHeader, DropdownItem
 import { Link, useLocation } from "react-router-dom"
 import { AiOutlineSearch } from 'react-icons/ai'
 import { FaMoon, FaSun } from 'react-icons/fa'
+import { useNavigate } from 'react-router-dom'
 
 import { Logo } from "@/components/Logo"
 import { themeTypes } from "@/constant/style.constants"
 import { userInfoStore } from "@/services/zustandStore/userStore"
 import { commonStore } from "@/services/zustandStore/commonStore"
+import { useSignOut } from "@/services/hooks/useSignOut.hook"
 
 export default function Header() {
   const path = useLocation().pathname
   const theme = commonStore(state => state.theme)
   const toggleTheme = commonStore(state => state.toggleTheme)
-  const userInfo = userInfoStore(state => state.userInfo)
+  const { userInfo, setUserInfo } = userInfoStore()
+  const navigate = useNavigate()
+  const { signOutMutation } = useSignOut(
+    () => {
+      setUserInfo(null)
+      navigate('/sign-in')
+    }
+  )
 
   return (
     <Navbar className="border-b-2" fluid rounded>
@@ -38,7 +47,7 @@ export default function Header() {
                 <DropdownItem>Profile</DropdownItem>
             </Link>
             <DropdownDivider />
-            <DropdownItem>Sign Out</DropdownItem>
+            <DropdownItem onClick={() => signOutMutation.mutate()}>Sign Out</DropdownItem>
           </Dropdown>
         ) : <Link to='/sign-in'>
           <Button gradientDuoTone="purpleToBlue" outline>

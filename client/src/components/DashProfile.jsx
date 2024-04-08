@@ -14,6 +14,7 @@ import { InputField } from "@/components/InputField"
 import { ModalConfirm } from "@/components/ModalConfirm"
 import { deleteUserById, updateUserInfoById } from "@/api/authApi"
 import { userInfoStore } from "@/services/zustandStore/userStore"
+import { useSignOut } from "@/services/hooks/useSignOut.hook"
 
 const userInfoSchema = yup.object({
   username: yup.string().required(),
@@ -37,6 +38,18 @@ export const DashProfile = () => {
   const filePickerRef = useRef()
   const [currentNotification, setCurrentNotification] = useState(null)
   const [modalContent, setModalContent] = useState(null)
+  const { signOutMutation } = useSignOut(
+    () => {
+      setUserInfo(null)
+      navigate('/sign-in')
+    },
+    (res) => {
+      setCurrentNotification({
+        type: 'failure',
+        message: res.data.message
+      })
+    }
+  )
 
   useEffect(() => {
     imageFile && uploadImage()
@@ -204,6 +217,10 @@ export const DashProfile = () => {
     handleOpenModalConfirm(() => deleteUserMutation.mutate(currentUser?._id), "Are you sure you want to delete your account?")
   }
 
+  const handleSignOut = () => {
+    signOutMutation.mutate()
+  }
+
   return (
     currentUser && (
       <div className="max-w-lg mx-auto p-3 w-full">
@@ -239,7 +256,7 @@ export const DashProfile = () => {
         }
         <div className="text-red-500 flex justify-between mt-5">
           <span className="cursor-pointer" onClick={handleDeleteUser}>Delete Account</span>
-          <span className="cursor-pointer">Sign Out</span>
+          <span className="cursor-pointer" onClick={handleSignOut}>Sign Out</span>
         </div>
       </div>
     )

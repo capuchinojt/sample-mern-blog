@@ -25,3 +25,8 @@ export const deleteUserById = async (userId) => {
   const response = await deleteData(`/api/v1/user/delete/${userId}`)
   return response
 }
+
+export const signOut = async () => {
+  const response = await postData(`/api/v1/user/signout`)
+  return response
+}
