@@ -65,15 +65,8 @@ export const DashProfile = () => {
   const deleteUserMutation = useMutation({
     mutationFn: (userId) => deleteUserById(userId),
     onSuccess: () => {
-      setCurrentNotification({
-        type: 'success',
-        message: 'Account successfully deleted'
-      })
-      setTimeout(() => {
-        localStorage.removeItem('user-storage')
-        setUserInfo(null)
-        navigate('/sign-in')
-      }, 2000)
+      setUserInfo(null)
+      navigate('/sign-in')
     },
     onError: (res) => {
       setCurrentNotification({
