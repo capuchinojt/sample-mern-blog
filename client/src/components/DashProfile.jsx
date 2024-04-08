@@ -33,10 +33,10 @@ export const DashProfile = () => {
   const [imageFileUploadProgress, setImageFileUploadProgress] = useState(null)
   const [imageFileUploadError, setImageFileUploadError] = useState(null)
   const [isOpenModal, setIsOpenModal] = useState(false)
-  const [dataToUpdate, setDataToUpdate] = useState(null)
   const [isDataChange, setIsDataChange] = useState(false)
   const filePickerRef = useRef()
   const [currentNotification, setCurrentNotification] = useState(null)
+  const [modalContent, setModalContent] = useState(null)
 
   useEffect(() => {
     imageFile && uploadImage()
@@ -123,7 +123,7 @@ export const DashProfile = () => {
     setIsOpenModal(toggleOpenValue)
   }
 
-  const handleUpdateUserInfo = () => {
+  const handleUpdateUserInfo = (dataToUpdate) => {
     const userIdToUpdate = currentUser?._id
     if (userIdToUpdate && dataToUpdate) {
       const data = {
@@ -158,11 +158,16 @@ export const DashProfile = () => {
   }
 
   const onSubmit = (data) => {
-    console.log('Dash Profile: ', data)
     if (checkDataChange(data)) {
-      setDataToUpdate(data)
-      setIsOpenModal(true)
+      handleOpenModalConfirm(() => handleUpdateUserInfo(data))
     }
+  }
+
+  const handleOpenModalConfirm = (onConfirmFuc, messageConfirm) => {
+    setModalContent({
+      onConfirmFuc: onConfirmFuc, messageConfirm
+    })
+    setIsOpenModal(true)
   }
 
   const renderCircularProgressBar = (percentage) => {
@@ -203,14 +208,14 @@ export const DashProfile = () => {
   }
 
   const handleDeleteUser = () => {
-    deleteUserMutation.mutate(currentUser?._id)
+    handleOpenModalConfirm(() => deleteUserMutation.mutate(currentUser?._id), "Are you sure you want to delete your account?")
   }
 
   return (
     currentUser && (
       <div className="max-w-lg mx-auto p-3 w-full">
         <h1 className="my-7 text-center font-semibold text-3xl">Profile</h1>
-        { isOpenModal && <ModalConfirm isOpenModal toggleModalFunc={handleOpenModal} updateUserInfoFunc={handleUpdateUserInfo}/>}
+        <ModalConfirm isOpenModal={isOpenModal} toggleModalFunc={handleOpenModal} onConfirmFuc={modalContent?.onConfirmFuc} messageConfirm={modalContent?.messageConfirm}/>
         <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
           <div className="relative w-32 h-32 self-center cursor-pointer shadow-sm overflow-hidden rounded-full" onClick={() => filePickerRef.current.click()}>
             {imageFileUploadProgress && renderCircularProgressBar(imageFileUploadProgress)}
