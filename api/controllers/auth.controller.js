@@ -14,7 +14,7 @@ export const signUp = async (req, res, next) => {
   const passwordHash = bcryptjs.hashSync(password, 10)
 
   const newUser = new UserModel({
-    username, email, password: passwordHash
+    username, email, password: passwordHash, isAdmin
   })
   
   try {
@@ -45,7 +45,7 @@ export const signIn = async (req, res, next) => {
     } else {
       const { password, ...rest } = validUser._doc
       const token = jwt.sign(
-        { id: validUser.id },
+        { id: validUser.id, isAdmin: validUser.isAdmin },
         process.env.JWT_SECRET_KEY,
         // { expiresIn: '1d'}
       )
@@ -68,7 +68,7 @@ export const signInWithGoogle = async (req, res, next) => {
     if (validUser) {
       const { password, ...rest } = validUser._doc
       const token = jwt.sign(
-        { id: validUser.id },
+        { id: validUser.id, isAdmin: validUser.isAdmin },
         process.env.JWT_SECRET_KEY,
       )
 
