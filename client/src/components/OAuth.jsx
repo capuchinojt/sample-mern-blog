@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import { Button } from "flowbite-react"
 import { AiFillGoogleCircle } from "react-icons/ai"
 import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth'
@@ -8,12 +9,14 @@ import { signInWithGoogleRequest } from "@/api/authApi"
 import { userInfoStore } from "@/services/zustandStore/userStore"
 
 export const OAuth = () => {
+  const navigate = useNavigate()
   const setUserInfo = userInfoStore(state => state.setUserInfo)
   const mutationSignInWithGoogle = useMutation({
     mutationFn: (data) => signInWithGoogleRequest(data),
     onSuccess: async (res) => {
       console.log('mutationSignInWithGoogle', res)
       setUserInfo(res)
+      navigate('/')
     }
   })
 

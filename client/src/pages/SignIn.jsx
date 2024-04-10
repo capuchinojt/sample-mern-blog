@@ -30,7 +30,6 @@ export default function SignIn() {
       navigate('/')
     },
     onError: (res) => {
-      console.error('signIn error: ', res)
       setError(res?.response?.data || res)
     }
   })
