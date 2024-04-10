@@ -8,7 +8,7 @@ import { CircularProgressbar } from 'react-circular-progressbar'
 import { useMutation } from "@tanstack/react-query"
 import { app } from "@/firebase"
 import 'react-circular-progressbar/dist/styles.css'
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 import { InputField } from "@/components/InputField"
 import { ModalConfirm } from "@/components/ModalConfirm"
@@ -38,6 +38,7 @@ export const DashProfile = () => {
   const filePickerRef = useRef()
   const [currentNotification, setCurrentNotification] = useState(null)
   const [modalContent, setModalContent] = useState(null)
+  const [imageFileUploading, setImageFileUploading] = useState(false)
   const { signOutMutation } = useSignOut(
     () => {
       setUserInfo(null)
@@ -60,6 +61,7 @@ export const DashProfile = () => {
     onSuccess: (data) => {
       setUserInfo(data)
       setIsDataChange(false)
+      setImageFileUploadProgress(null)
       setCurrentNotification({
         type: 'success',
         message: 'Update successfully. Your changes have been successfully saved!'
@@ -107,6 +109,7 @@ export const DashProfile = () => {
     const uploadTask = uploadBytesResumable(storageRef, imageFile)
     uploadTask.on('state_changed',
       (snapshot) => {
+        setImageFileUploading(true)
         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
         setImageFileUploadProgress(progress.toFixed(0))
       },
@@ -116,10 +119,12 @@ export const DashProfile = () => {
         setImageFileUploadProgress(null)
         setImageFile(null)
         setImageFileUrl(null)
+        setImageFileUploading(false)
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           setImageFileUrl(downloadURL)
+          setImageFileUploading(false)
         })
       }
     )
@@ -236,14 +241,21 @@ export const DashProfile = () => {
           <InputField handleChangeData={checkChangeData} id="username" type="text" registerControl={register('username')} errors={errors} defaultValue={currentUser.username} />
           <InputField handleChangeData={checkChangeData} id="email" type="text" registerControl={register('email')} errors={errors} defaultValue={currentUser.email} />
           <InputField handleChangeData={checkChangeData} id="password" type="password" registerControl={register('password')} errors={errors} placeholder="Password" />
-          <Button disabled={!isDataChange || updateUserInfoMutation.isPending} type="submit" gradientDuoTone="purpleToBlue" outline>
+          <Button disabled={!isDataChange || updateUserInfoMutation.isPending || imageFileUploading} type="submit" gradientDuoTone="purpleToBlue" outline>
             {
-              updateUserInfoMutation.isPending ? <>
+              updateUserInfoMutation.isPending || imageFileUploading ? <>
                 <Spinner size='sm' />
                   <span className="pl-3">Loading...</span>
               </> : 'Update'
             }
           </Button>
+          {
+            currentUser.isAdmin && (
+              <Link to="/create-post">
+                <Button className="w-full" gradientDuoTone="purpleToPink">Create a post</Button>
+              </Link>
+            )
+          }
         </form>
         {
           currentNotification && (
