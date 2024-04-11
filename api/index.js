@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser"
 import "./dbs/init.database.js"
 import userRoutes from './routes/user.route.js'
 import authRoutes from './routes/auth.route.js'
+import postRoutes from './routes/post.route.js'
 import { handleError } from "./controllers/error.controller.js"
 
 const PORT = process.env.PORT || 9999
@@ -25,6 +26,7 @@ app.listen(PORT, () => {
 
 app.use('/api/v1/user', userRoutes)
 app.use('/api/auth', authRoutes)
+app.use('/api/post', postRoutes)
 
 // Middleware to handle errors
 app.use(handleError)
