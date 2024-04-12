@@ -1,6 +1,6 @@
 import express from 'express'
 
-import { signIn, signInWithGoogle, signUp } from '../controllers/auth.controller.js'
+import { signIn, signInWithGoogle, signUp, verifyAccount } from '../controllers/auth.controller.js'
 
 const router = express.Router()
 
@@ -12,5 +12,8 @@ router.post('/signin', signIn)
 
 // api/auth/signInWithGoogle
 router.post('/signInWithGoogle', signInWithGoogle)
+
+// api/auth/verify-account
+router.get('/verify-account', verifyAccount)
 
 export default router
