@@ -34,3 +34,13 @@ export const createPost = async (req, res, next) => {
     next(errorHandler(ERROR_CODES.BAD_REQUEST, 'An error occurred while creating post.'))
   }
 }
+
+export const getPosts = async (req, res, next) => {
+  try {
+    const posts = await PostModel.find()
+    res.status(200).json(posts)
+  } catch (error) {
+    console.error('Error get post::', error.message)
+    next(errorHandler(ERROR_CODES.BAD_REQUEST, 'An error occurred while get posts.'))
+  }
+}

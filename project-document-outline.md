@@ -1,3 +1,5 @@
+API: https://sample-mern-blog-1.onrender.com
+
 ## TECH:
 ### Client:
  - ReactJS
