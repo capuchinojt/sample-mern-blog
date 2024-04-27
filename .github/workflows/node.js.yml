@@ -32,6 +32,9 @@ jobs:
     #- run: npm test
 
     - name: Deploy 🚀
-      uses: JamesIves/github-pages-deploy-action@v4
-      with:
-        folder: ./client/dist # The folder the action should deploy.
+      #uses: JamesIves/github-pages-deploy-action@v4
+      run: npm run deploy
+      env:
+        VITE_FIREBASE_API_KEY: AIzaSyAtV8EYv4Dka1Ba35pURTaHWQHdm5IZX_o
+      #with:
+        #folder: ./client/dist # The folder the action should deploy.
