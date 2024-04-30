@@ -16,6 +16,6 @@ export default {
     },
   },
   darkMode: 'class',
-  plugins: [import('flowbite-react')],
+  plugins: [import('flowbite-react'), import('tailwind-scrollbar')],
 }
 

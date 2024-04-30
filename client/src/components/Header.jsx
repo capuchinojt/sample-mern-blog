@@ -1,8 +1,7 @@
 import { Avatar, Button, Dropdown, DropdownDivider, DropdownHeader, DropdownItem, Navbar, TextInput } from "flowbite-react"
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { AiOutlineSearch } from 'react-icons/ai'
 import { FaMoon, FaSun } from 'react-icons/fa'
-import { useNavigate } from 'react-router-dom'
 
 import { Logo } from "@/components/Logo"
 import { themeTypes } from "@/constant/style.constants"
