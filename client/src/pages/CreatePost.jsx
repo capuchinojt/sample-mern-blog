@@ -18,7 +18,7 @@ import { messageType } from "@/constant/status.constants"
 export const CreatePost = () => {
   const postSchema = yup.object({
     title: yup.string().required(),
-    image: yup.string().required()
+    image: yup.string()
   })
   const {register, handleSubmit, setValue, getValues, watch, formState: {errors}} = useForm({
     resolver: yupResolver(postSchema)
@@ -60,7 +60,7 @@ export const CreatePost = () => {
       title: data.title,
       category: data.category,
       content: data.editorContent,
-      image: data.image
+      ...(data?.image && { image: data.image })
     }
     createPostMutation.mutate(postData)
   }

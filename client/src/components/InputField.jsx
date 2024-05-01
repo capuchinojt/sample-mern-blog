@@ -33,7 +33,7 @@ InputField.propTypes = {
   label: PropTypes.string,
   type: PropTypes.string.isRequired,
   placeholder: PropTypes.string,
-  registerControl: PropTypes.shape({}),
+  registerControl: PropTypes.func,
   errors: PropTypes.shape({}),
   defaultValue: PropTypes.string,
   handleChangeData: PropTypes.func,

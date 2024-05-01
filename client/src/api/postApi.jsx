@@ -6,6 +6,7 @@ export const createPostRequest = async (reqData) => {
 }
 
 export const getPostsRequest = async (reqData) => {
-  const response = await fetchData(`/api/post/getPosts?userId=${reqData?.userId}`)
+  const params = new URLSearchParams(reqData).toString()
+  const response = await fetchData(`/api/post/getPosts?${params}`)
   return response
 }
