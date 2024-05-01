@@ -4,18 +4,17 @@ import PropTypes from 'prop-types'
 
 export const PostTable = ({ posts }) => {
   return (
-    posts.length > 0 ? (
-      <Table hoverable className="shadow-md w-full">
-        <Table.Head>
-          <Table.HeadCell>Date Updated</Table.HeadCell>
-          <Table.HeadCell>Post Image</Table.HeadCell>
-          <Table.HeadCell>Post Title</Table.HeadCell>
-          <Table.HeadCell>Category</Table.HeadCell>
-          <Table.HeadCell>Delete</Table.HeadCell>
-          <Table.HeadCell>
-            <span>Edit</span>
-          </Table.HeadCell>
-        </Table.Head>
+    <Table hoverable className="shadow-md w-full">
+      <Table.Head>
+        <Table.HeadCell>Date Updated</Table.HeadCell>
+        <Table.HeadCell>Post Image</Table.HeadCell>
+        <Table.HeadCell>Post Title</Table.HeadCell>
+        <Table.HeadCell>Category</Table.HeadCell>
+        <Table.HeadCell>Delete</Table.HeadCell>
+        <Table.HeadCell>
+          <span>Edit</span>
+        </Table.HeadCell>
+      </Table.Head>
       {
         posts.map(post => (
           <Table.Body key={post._id} className="divide-y">
@@ -45,9 +44,6 @@ export const PostTable = ({ posts }) => {
         ))
       }
     </Table>
-    ) : (
-      <p>You have no post yet!</p>
-    )
   )
 }
 

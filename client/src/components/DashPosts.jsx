@@ -1,31 +1,34 @@
-import { userInfoStore } from "@/services/zustandStore/userStore"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
+import { useInfiniteQuery } from "@tanstack/react-query"
 
+import { userInfoStore } from "@/services/zustandStore/userStore"
 import { PostTable } from "@/components/PostTable"
-import { useGetPosts } from "@/services/hooks/useGetPosts.hook"
+import { getPostsRequest } from "@/api/postApi"
 
 export const DashPosts = () => {
   const currentUser = userInfoStore(state => state.userInfo)
 
-  const [showMore, setShowMore] = useState(false)
-  const [startIndex, setStartIndex] = useState(0)
-  const [posts, setPosts] = useState([])
-
-  const { isPending, isError, data, error, refetch } = useGetPosts({
-    userId: currentUser?._id,
-    isAdmin: currentUser?.isAdmin,
-    startIndex
+  const { isFetching, isError, data, error, hasNextPage, fetchNextPage } = useInfiniteQuery({
+    queryKey: ['dash_posts'],
+    queryFn: ({ pageParam = 0 }) => getPostsRequest({
+      userId: currentUser._id,
+      startIndex: pageParam,
+      limit: 9
+    }),
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.data.totalPosts > allPages.length * 9 ? allPages.length * 9 : undefined
+    },
+    enabled: !!currentUser?._id && currentUser?.isAdmin
   })
 
-  useEffect(() => {
-    const { postCount, totalPosts } = data?.data || {}
-    postCount === 9 && totalPosts > 9 ? setShowMore(true) : setShowMore(false)
-    if (Array.isArray(data?.data?.posts) && data?.data?.posts.length > 0) {
-      startIndex === 0 ? setPosts(data?.data?.posts || []) : setPosts(prevPost => [...prevPost, ...data?.data?.posts || []]) 
+  const posts = useMemo(() => {
+    if (data?.pages && data?.pages.length > 0) {
+      return data.pages.flatMap(page => page.data.posts)
     }
+    return []
   }, [data])
 
-  if (isPending) {
+  if (isFetching) {
     return <span>Loading...</span>
   }
 
@@ -34,19 +37,16 @@ export const DashPosts = () => {
   }
 
   const handleShowMore = () => {
-    setStartIndex(posts.length)
-    refetch()
+    fetchNextPage()
   }
 
-  console.log('dash_posts::', data?.data?.posts)
-
   return (
-    <div className="bg-white table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
+    <div className="table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
       {
         currentUser?.isAdmin && <PostTable posts={posts} />
       }
       <div>
-        { showMore && (
+        { hasNextPage && (
           <button onClick={handleShowMore} className="w-full text-teal-500 self-center text-sm py-7">
             Show more
           </button>

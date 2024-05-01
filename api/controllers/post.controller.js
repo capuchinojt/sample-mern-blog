@@ -3,6 +3,7 @@ import { ERROR_CODES } from "../constant/errorStatus.constant.js"
 import Post from "../models/post.model.js"
 import PostModel from "../models/post.model.js"
 import { errorHandler } from "../utils/error.handle.js"
+import moment from "moment-timezone"
 
 export const getAllPost = async (req, res) => {
   const posts = await PostModel.find()
