@@ -39,41 +39,35 @@ export const createPost = async (req, res, next) => {
 
 export const getPosts = async (req, res, next) => {
   try {
-    const startIndex = parseInt(req.query.startIndex) || 0
-    const limit = parseInt(req.query.limit) || 9
-    const sortDirection = req.query.order === 'asc' ? 1 : -1
-    const conditions = buildQueryCondition(req.query)
-    const posts = await PostModel.find(conditions)
-                                 .sort({ updatedAt: sortDirection })
-                                 .skip(startIndex)
-                                 .limit(limit)
-    const postCount = posts.length
-    
-    const totalPosts = await PostModel.countDocuments()
+    const { startIndex = 0, limit = 9, order = 'desc' } = req.query;
+    const sortDirection = order === 'asc' ? 1 : -1;
+    const conditions = buildQueryCondition(req.query);
 
-    const now = new Date()
+    const [posts, totalPosts] = await Promise.all([
+      PostModel.find(conditions)
+        .sort({ updatedAt: sortDirection })
+        .skip(startIndex)
+        .limit(limit),
+      PostModel.countDocuments(),
+    ]);
 
-    const oneMonthAgo = new Date(
-      now.getFullYear(),
-      now.getMonth() - 1,
-      now.getDate()
-    )
-
+    const postCount = posts.length;
+    const oneMonthAgo = moment().subtract(1, 'months').toDate();
     const lastMonthPosts = await PostModel.countDocuments({
-      createdAt: { $gte: oneMonthAgo }
-    })
+      createdAt: { $gte: oneMonthAgo },
+    });
 
     res.status(200).json({
       posts,
       postCount,
       totalPosts,
-      lastMonthPosts
-    })
+      lastMonthPosts,
+    });
   } catch (error) {
-    console.error('Error get post::', error.message)
-    next(errorHandler(ERROR_CODES.BAD_REQUEST, 'An error occurred while get posts.'))
+    console.error('Error getting posts:', error.message);
+    next(errorHandler(ERROR_CODES.BAD_REQUEST, 'An error occurred while getting posts.'));
   }
-}
+};
 
 const buildQueryCondition = (query) => {
   let conditions = {};
