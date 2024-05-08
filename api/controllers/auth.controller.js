@@ -14,7 +14,7 @@ export const signUp = async (req, res, next) => {
   const passwordHash = bcryptjs.hashSync(password, 10)
 
   const newUser = new UserModel({
-    username, email, password: passwordHash, isAdmin
+    username, email, password: passwordHash
   })
   
   try {

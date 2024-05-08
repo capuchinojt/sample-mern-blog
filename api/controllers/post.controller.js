@@ -1,9 +1,8 @@
-import { query } from "express"
 import { ERROR_CODES } from "../constant/errorStatus.constant.js"
-import Post from "../models/post.model.js"
 import PostModel from "../models/post.model.js"
 import { errorHandler } from "../utils/error.handle.js"
 import moment from "moment-timezone"
+import { createResponse } from "../utils/responseHelper.js"
 
 export const getAllPost = async (req, res) => {
   const posts = await PostModel.find()
@@ -12,7 +11,7 @@ export const getAllPost = async (req, res) => {
 
 export const createPost = async (req, res, next) => {
   try {
-    if (!req?.user || !req?.user.id || !req?.user.isAdmin) {
+    if (!req?.user.id || !req?.user.isAdmin) {
       return next(errorHandler(ERROR_CODES.FORBIDDEN, 'You are not allowed to create post.'))
     }
 
@@ -40,47 +39,99 @@ export const createPost = async (req, res, next) => {
 
 export const getPosts = async (req, res, next) => {
   try {
-    const { startIndex = 0, limit = 9, order = 'desc' } = req.query;
-    const sortDirection = order === 'asc' ? 1 : -1;
-    const conditions = buildQueryCondition(req.query);
+    const { startIndex = 0, limit = 9, order = 'desc' } = req.query
+    const sortDirection = order === 'asc' ? 1 : -1
+    const conditions = buildQueryCondition(req.query)
 
     const [posts, totalPosts] = await Promise.all([
       PostModel.find(conditions)
         .sort({ updatedAt: sortDirection })
         .skip(startIndex)
         .limit(limit),
-      PostModel.countDocuments(),
-    ]);
+      PostModel.countDocuments({
+        conditions
+      }),
+    ])
 
-    const postCount = posts.length;
-    const oneMonthAgo = moment().subtract(1, 'months').toDate();
+    const postCount = posts.length
+    const oneMonthAgo = moment().subtract(1, 'months').toDate()
     const lastMonthPosts = await PostModel.countDocuments({
       createdAt: { $gte: oneMonthAgo },
-    });
+    })
 
     res.status(200).json({
       posts,
       postCount,
       totalPosts,
       lastMonthPosts,
-    });
+    })
   } catch (error) {
-    console.error('Error getting posts:', error.message);
-    next(errorHandler(ERROR_CODES.BAD_REQUEST, 'An error occurred while getting posts.'));
+    console.error('Error getting posts:', error.message)
+    next(errorHandler(ERROR_CODES.BAD_REQUEST, 'An error occurred while getting posts.'))
   }
-};
+}
+
+export const deletePost = async (req, res, next) => {
+  if (req?.user.id !== req.params.userId) {
+    return next(errorHandler(ERROR_CODES.FORBIDDEN, 'You are not allowed to delete post.'))
+  }
+
+  if (!req.params?.postId) {
+    return next(errorHandler(ERROR_CODES.BAD_REQUEST, 'An error occurred while delete posts.'))
+  }
+
+  try {
+    await PostModel.findByIdAndDelete(req.params.postId)
+    return res.status(200).json(createResponse({
+      success: true,
+      message: 'Detele post successfully.'
+    }))
+  } catch (error) {
+    console.error('Error delete post:', error.message)
+    next(errorHandler(ERROR_CODES.BAD_REQUEST, 'An error occurred while delete posts.'))
+  }
+}
+
+export const updatePost = async (req, res, next) => {
+  if (req?.user.id !== req.params.userId) {
+    return next(errorHandler(ERROR_CODES.FORBIDDEN, 'You are not allowed to update post.'))
+  }
+
+  if (!req.params.postId) {
+    return next(errorHandler(ERROR_CODES.BAD_REQUEST, 'An error occurred while update posts.'))
+  }
+
+  try {
+    const postUpdated = await PostModel.findByIdAndUpdate(req.params.postId, {
+      $set: {
+        title: req.body.title,
+        content: req.body.content,
+        category: req.body.category,
+        image: req.body.image
+      }
+    }, { new: true })
+    res.status(200).json(createResponse({
+      success: true,
+      data: postUpdated,
+      message: 'Update post successfully.'
+    }))
+  } catch (error) {
+    console.error('Error update post::', error.message)
+    next(errorHandler(ERROR_CODES.BAD_REQUEST, 'An error occurred while update post.'))
+  }
+}
 
 const buildQueryCondition = (query) => {
-  let conditions = {};
-  if (query?.userId) conditions.userId = query.userId;
-  if (query?.category) conditions.category = query.category;
-  if (query?.slug) conditions.slug = query.slug;
-  if (query?.postId) conditions._id = query.postId;
+  let conditions = {}
+  if (query?.userId) conditions.userId = query.userId
+  if (query?.category) conditions.category = query.category
+  if (query?.slug) conditions.slug = query.slug
+  if (query?.postId) conditions._id = query.postId
   if (query?.searchTerm) {
       conditions.$or = [
           { title: { $regex: query.searchTerm, $options: 'i' } },
           { content: { $regex: query.searchTerm, $options: 'i' } }
-      ];
+      ]
   }
-  return conditions;
+  return conditions
 }

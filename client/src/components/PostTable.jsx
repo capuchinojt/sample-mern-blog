@@ -1,10 +1,38 @@
+import { useState } from "react"
 import { Table } from "flowbite-react"
 import { Link } from "react-router-dom"
+import { useMutation } from "@tanstack/react-query"
 import PropTypes from 'prop-types'
 
-export const PostTable = ({ posts }) => {
+import { ModalConfirm } from "@/components/ModalConfirm"
+import { userInfoStore } from "@/services/zustandStore/userStore"
+import { deletePostRequest } from "@/api/postApi"
+
+export const PostTable = ({ posts, refetchFunc }) => {
+  const [toggleDeletePostModal, setToggleDeletePostModal] = useState(false)
+  const currentUser = userInfoStore(state => state.userInfo)
+  const [postDeleteId, setPostDeleteId] = useState(null)
+  const deletePostMutation = useMutation({
+    mutationFn: (requestData) => deletePostRequest(requestData),
+    onSuccess: () => {
+      typeof refetchFunc === 'function' && refetchFunc()
+    },
+    onError: (error) => {
+      console.log('Error while delete post:: ', error)
+    }
+  })
+  const handleOnDelete = () => {
+    deletePostMutation.mutate({ userId: currentUser?._id, postId: postDeleteId })
+  }
+
+  const handleOnClickDeleteBtn = (deletePostId) => {
+    setToggleDeletePostModal(true)
+    setPostDeleteId(deletePostId)
+  }
+
   return (
-    <Table hoverable className="shadow-md w-full">
+    <>
+      <Table hoverable className="shadow-md w-full">
       <Table.Head>
         <Table.HeadCell>Date Updated</Table.HeadCell>
         <Table.HeadCell>Post Image</Table.HeadCell>
@@ -17,7 +45,7 @@ export const PostTable = ({ posts }) => {
       </Table.Head>
       {
         posts.map(post => (
-          <Table.Body key={post._id} className="divide-y">
+          <Table.Body key={post._id} className="divide-y" data-attr={post._id}>
             <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
               <Table.Cell>{new Date(post.updatedAt).toLocaleDateString()}</Table.Cell>
               <Table.Cell>
@@ -32,7 +60,7 @@ export const PostTable = ({ posts }) => {
               </Table.Cell>
               <Table.Cell>{post.category}</Table.Cell>
               <Table.Cell>
-                <span className="font-medium text-red-500 hover:underline cursor-pointer">Delete</span>
+                <span className="font-medium text-red-500 hover:underline cursor-pointer" role="button" onClick={() => handleOnClickDeleteBtn(post._id)} tabIndex={0}>Delete</span>
               </Table.Cell>
               <Table.Cell>
                 <Link className="text-teal-500 hover:underline" to={`/update-post/${post._id}`}>
@@ -43,10 +71,13 @@ export const PostTable = ({ posts }) => {
           </Table.Body>
         ))
       }
-    </Table>
+      </Table>
+      <ModalConfirm type="confirm" isOpenModal={toggleDeletePostModal} toggleModalFunc={(toggleValue) => setToggleDeletePostModal(toggleValue)} messageConfirm="Are you sure you want to delete this post?" onConfirmFuc={handleOnDelete} />
+    </>
   )
 }
 
 PostTable.propTypes = {
-  posts: PropTypes.arrayOf(PropTypes.object)
+  posts: PropTypes.arrayOf(PropTypes.object),
+  refetchFunc: PropTypes.func
 }

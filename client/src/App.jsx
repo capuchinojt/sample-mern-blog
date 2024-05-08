@@ -7,6 +7,7 @@ import { PrivateRoute } from "./components/PrivateRoute"
 import Dashboard from "./pages/Dashboard"
 import { AdminRoute } from "./components/AdminRoute"
 import { CreatePost } from "./pages/CreatePost"
+import { UpdatePost } from "./pages/UpdatePost"
 
 export default function App() {
 
@@ -21,6 +22,7 @@ export default function App() {
         <Route element={<PrivateRoute />}>
           <Route element={<AdminRoute />}>
             <Route path="/create-post" element={<CreatePost />} />
+            <Route path="/update-post/:postId" element={<UpdatePost />} />
           </Route>
           <Route path="/dashboard" element={<Dashboard />} />
         </Route>
