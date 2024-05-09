@@ -1,5 +1,8 @@
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form"
-import { Alert, Button, FileInput, Select, TextInput } from 'flowbite-react'
+import { useParams } from "react-router-dom"
+import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage"
+import { Alert, Button, FileInput, Select, Spinner, TextInput } from 'flowbite-react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import ReactQuill from "react-quill"
 import 'react-quill/dist/quill.snow.css'
@@ -9,13 +12,12 @@ import { CircularProgressbar } from 'react-circular-progressbar'
 import 'react-circular-progressbar/dist/styles.css'
 
 import { yupResolver } from "@hookform/resolvers/yup"
-import { useEffect, useMemo, useState } from "react";
-import { getPostRequest, updatePostRequest } from "@/api/postApi"
-import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage"
 import { app } from "@/firebase"
+import { getPostRequest, updatePostRequest } from "@/api/postApi"
 import { messageType } from "@/constant/status.constants"
 import { userInfoStore } from "@/services/zustandStore/userStore"
-import { useParams } from "react-router-dom"
+import { Blank } from "@/pages/Blank"
+import { apiErrorMessages } from "@/constant/errorCode.constants"
 
 export const UpdatePost = () => {
   const postSchema = yup.object({
@@ -98,16 +100,12 @@ export const UpdatePost = () => {
     updatePostMutation.mutate(postData)
   }
 
-  if (isLoading || updatePostMutation.isLoading) {
-    return 'Loading...'
-  }
-
   if (isError) {
-    return 'Error when updating post...'
+    return <Blank messObj={apiErrorMessages.CONFLICT} />
   }
 
   if (!data || data.status !== 200) {
-    return 'No data found...'
+    return <Blank messObj={apiErrorMessages.NOT_FOUND} />
   }
 
   const editorContent = watch('editorContent')
@@ -206,7 +204,16 @@ export const UpdatePost = () => {
           )
         }
         <ReactQuill theme="snow" value={editorContent} placeholder="Write something..." className="h-72 mb-12" onChange={onContentChange} />
-        <Button type="submit" gradientDuoTone="purpleToPink">Publish</Button>
+        <Button type="submit" gradientDuoTone="purpleToPink">
+          {
+            isLoading || updatePostMutation.isLoading ? (
+              <div className="text-center py-7">
+                <Spinner size='sm' />
+                <span className="pl-3">Loading...</span>
+              </div> 
+            ) : "Publish"
+          }
+        </Button>
         {
           notificationContent?.apiType === 'updatePost' && (
             <Alert color={notificationContent?.messageType} onDismiss={() => setNotificationContent(null)}>
