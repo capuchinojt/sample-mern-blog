@@ -1,5 +1,5 @@
 import express from 'express'
-import { deleteUser, getUserInfo, getUsers, signOut, updateUserInfo } from '../controllers/user.controller.js'
+import { deleteUser, deleteUserByAdmin, getUserInfo, getUsers, signOut, updateUserInfo } from '../controllers/user.controller.js'
 import { verifyToken } from '../utils/verifyUser.handle.js'
 
 const router = express.Router()
@@ -15,6 +15,9 @@ router.put('/update/:userId', verifyToken, updateUserInfo)
 
 // /api/v1/user/delete/:userId
 router.delete('/delete/:userId', verifyToken, deleteUser)
+
+// /api/v1//user/admin/delete/:userId
+router.delete('/admin/delete/:userId', verifyToken, deleteUserByAdmin)
 
 // /api/v1/user/signout
 router.post('/signout', signOut)

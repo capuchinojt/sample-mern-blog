@@ -2,7 +2,7 @@ import { useSignOut } from "@/services/hooks/useSignOut.hook"
 import { userInfoStore } from "@/services/zustandStore/userStore"
 import { Sidebar, SidebarItem, SidebarItemGroup, SidebarItems } from "flowbite-react"
 import { useEffect, useState } from "react"
-import { HiArrowSmRight, HiDocumentText, HiUser } from 'react-icons/hi'
+import { HiArrowSmRight, HiDocumentText, HiOutlineUserGroup, HiUser } from 'react-icons/hi'
 import { Link, useLocation, useNavigate } from "react-router-dom"
 
 export const DashSidebar = () => {
@@ -37,6 +37,15 @@ export const DashSidebar = () => {
               <Link to='/dashboard?tab=posts'>
                 <SidebarItem active={tab === 'posts'} icon={HiDocumentText} labelColor='dark' as='div'>
                   Posts
+                </SidebarItem>
+              </Link>
+            )
+          }
+          {
+            currentUser?.isAdmin && (
+              <Link to='/dashboard?tab=users'>
+                <SidebarItem active={tab === 'users'} icon={HiOutlineUserGroup} labelColor='dark' as='div'>
+                  Users
                 </SidebarItem>
               </Link>
             )
