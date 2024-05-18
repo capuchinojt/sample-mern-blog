@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 
 export const Blank = ({ messObj }) => {
   const { message, code } = messObj
-  return <div className='w-full h-40 text-center align-middle content-center'>
+  return <div className='w-full h-40 text-center align-middle content-center min-h-screen'>
     <div className=''>
       { code && <span className='font-bold'>{code}</span>} <br />
       <span className='font-medium'>{message}</span>

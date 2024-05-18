@@ -1,5 +1,6 @@
 import About from "@/pages/About"
 import Home from "@/pages/Home"
+import { PostPage } from "@/pages/PostPage"
 import Projects from "@/pages/Projects"
 import SignIn from "@/pages/SignIn"
 import SignUp from "@/pages/SignUp"
@@ -10,4 +11,5 @@ export const pages = [
   {path: '/sign-in', element:<SignIn />, key: 'SignIn'},
   {path: '/sign-up', element:<SignUp />, key: 'SignUp'},
   {path: '/projects', element:<Projects />, key: 'Projects'},
+  {path: "/post/:postSlug", element:<PostPage />, key: 'PostPage'}
 ]
