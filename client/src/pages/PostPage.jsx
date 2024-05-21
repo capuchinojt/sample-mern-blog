@@ -10,7 +10,7 @@ import { useMemo } from "react"
 export const PostPage = () => {
   const { postSlug } = useParams()
 
-  const { isLoading, isError, data, error } = useQuery({
+  const { isLoading, isError, data } = useQuery({
     queryKey: ['post', postSlug],
     queryFn: () => getPostsRequest({
       slug: postSlug
