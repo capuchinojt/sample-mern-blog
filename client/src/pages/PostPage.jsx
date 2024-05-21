@@ -1,10 +1,12 @@
-import { getPostsRequest } from "@/api/postApi"
-import { useQuery } from "@tanstack/react-query"
-import { Button, Spinner } from "flowbite-react"
-import { Link, useParams } from "react-router-dom"
-import { Blank } from "./Blank"
-import { apiErrorMessages } from "@/constant/errorCode.constants"
 import { useMemo } from "react"
+import { Link, useParams } from "react-router-dom"
+import { Button, Spinner } from "flowbite-react"
+import { useQuery } from "@tanstack/react-query"
+
+import { CallToAction } from "@/components/CallToAction"
+import { getPostsRequest } from "@/api/postApi"
+import { Blank } from "@/pages/Blank"
+import { apiErrorMessages } from "@/constant/errorCode.constants"
 
 
 export const PostPage = () => {
@@ -44,6 +46,7 @@ export const PostPage = () => {
         <span className="italic">{post && (post.content.length / 1000).toFixed(0)} mins read</span>
       </div>
       <div className="p-3 max-w-2xl mx-auto w-full post-content" dangerouslySetInnerHTML={{__html: post?.content}} />
+      <CallToAction />
     </main>
   )
 }
