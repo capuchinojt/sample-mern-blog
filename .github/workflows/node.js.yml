@@ -50,7 +50,7 @@ jobs:
     needs: build-and-deploy
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
     steps:
       - uses: actions/checkout@v4
@@ -59,9 +59,22 @@ jobs:
           node-version: 20
           registry-url: 'https://npm.pkg.github.com'
           scope: '@capuchinojt'
-      - run: npm install
+      - name: Install dependencies
         working-directory: ./client
-      - run: npm publish
+        run: npm install
+      - name: Bump version
         working-directory: ./client
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          npm version patch -m "Bump version to %s"
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+      - name: Publish to GitHub Packages
+        working-directory: ./client
+        run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
