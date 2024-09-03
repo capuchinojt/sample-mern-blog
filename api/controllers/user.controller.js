@@ -171,7 +171,7 @@ export const deleteUserByAdmin = async (req, res, next) => {
 
 export const signOut = async (req, res, next) => {
   try {
-    logger('User Sign Out', { userId: req.user.id })
+    logger('User Sign Out', { userId: req.user })
     res.clearCookie('access_token').status(200).json({message: "User has been signed out!"})
   } catch (error) {
     logger('Error Signing Out', { userId: req.user.id, error: error.message })
