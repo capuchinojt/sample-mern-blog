@@ -30,13 +30,9 @@ jobs:
       working-directory: ./client
     - run: npm run build
       working-directory: ./client
-    - run: npm run deploy
-
-    - name: Deploy 🚀
-      uses: JamesIves/github-pages-deploy-action@v4
+    # Thay thế lệnh deploy bằng một lệnh cụ thể để triển khai
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
       with:
-        folder: ./client/dist
-        branch: gh-pages
-        token: ${{ secrets.GITHUB_TOKEN }}
-    #with:
-        #folder: ./client/dist # The folder the action should deploy.
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./client/dist
