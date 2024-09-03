@@ -26,7 +26,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm install
+    - run: npm ci
       working-directory: ./client
     - run: npm run build
       working-directory: ./client
@@ -36,3 +36,5 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./client/dist
+        # Thêm dòng sau để sử dụng token cá nhân nếu cần
+        personal_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
