@@ -8,6 +8,7 @@ import { themeTypes } from "@/constant/style.constants"
 import { userInfoStore } from "@/services/zustandStore/userStore"
 import { commonStore } from "@/services/zustandStore/commonStore"
 import { useSignOut } from "@/services/hooks/useSignOut.hook"
+import { useMemo } from 'react'
 
 export default function Header() {
   const path = useLocation().pathname
@@ -21,6 +22,20 @@ export default function Header() {
       navigate('/sign-in')
     }
   )
+
+  const memoizedUserDropdown = useMemo(() => (
+    <Dropdown arrowIcon={false} inline label={<Avatar alt='user' img={userInfo?.profilePicture} rounded />}>
+      <DropdownHeader>
+        <span className="block text-sm">@{userInfo?.username}</span>
+        <span className="block text-sm font-medium truncate">{userInfo?.email}</span>
+      </DropdownHeader>
+      <Link to="/dashboard?tab=profile">
+          <DropdownItem>Profile</DropdownItem>
+      </Link>
+      <DropdownDivider />
+      <DropdownItem onClick={() => signOutMutation.mutate()}>Sign Out</DropdownItem>
+    </Dropdown>
+  ), [userInfo, signOutMutation])
 
   return (
     <Navbar className="border-b-2" fluid rounded>
@@ -37,17 +52,7 @@ export default function Header() {
         </Button>
         {/* <DarkThemeToggle className="hidden sm:inline mr-2"/> */}
         {userInfo ? (
-          <Dropdown arrowIcon={false} inline label={<Avatar alt='user' img={userInfo.profilePicture} rounded />}>
-            <DropdownHeader>
-              <span className="block text-sm">@{userInfo.username}</span>
-              <span className="block text-sm font-medium truncate">{userInfo.email}</span>
-            </DropdownHeader>
-            <Link to="/dashboard?tab=profile">
-                <DropdownItem>Profile</DropdownItem>
-            </Link>
-            <DropdownDivider />
-            <DropdownItem onClick={() => signOutMutation.mutate()}>Sign Out</DropdownItem>
-          </Dropdown>
+          memoizedUserDropdown
         ) : <Link to='/sign-in'>
           <Button gradientDuoTone="purpleToBlue" outline>
             Sign In

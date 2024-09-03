@@ -9,18 +9,48 @@ import { AdminRoute } from "./components/AdminRoute"
 import { CreatePost } from "./pages/CreatePost"
 import { UpdatePost } from "./pages/UpdatePost"
 import { ScrollToTop } from "./components/ScrollToTop"
+import { lazy, Suspense } from "react"
+
+const About = lazy(() => import("@/pages/About"))
+const SignInLazy = lazy(() => import("@/pages/SignIn"))
+const SignUpLazy = lazy(() => import("@/pages/SignUp"))
 
 export default function App() {
 
   return (
     <BrowserRouter>
-    <ScrollToTop />
+      <ScrollToTop />
       <Header />
       <Routes>
         {
-          // eslint-disable-next-line react/jsx-key
-          pages.map((page) => <Route {...page} key={page.key}/>)
+          pages.map((page) => (
+            <Route {...page} key={page.key} />
+          ))
         }
+        <Route
+          path="/about"
+          element={
+            <Suspense fallback={<div>Loading...</div>}>
+              <About />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/sign-in"
+          element={
+            <Suspense fallback={<div>Loading...</div>}>
+              <SignInLazy />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/sign-up"
+          element={
+            <Suspense fallback={<div>Loading...</div>}>
+              <SignUpLazy />
+            </Suspense>
+          }
+        />
         <Route element={<PrivateRoute />}>
           <Route element={<AdminRoute />}>
             <Route path="/create-post" element={<CreatePost />} />
@@ -31,5 +61,5 @@ export default function App() {
       </Routes>
       <FooterPage />
     </BrowserRouter>
-  )
+  );
 }

@@ -1,7 +1,7 @@
 import { Alert, Button, Spinner } from "flowbite-react"
 import { Link, useNavigate } from "react-router-dom"
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { useForm } from 'react-hook-form'
 import * as yup from 'yup'
@@ -23,10 +23,13 @@ export default function SignIn() {
   const navigate = useNavigate()
   const [error, setError] = useState(null)
   const setUserInfo = userInfoStore((state) => state.setUserInfo)
+  const queryClient = useQueryClient()
+  
   const mutationSignIn = useMutation({
     mutationFn: (data) => signInRequest(data),
     onSuccess: (res) => {
       setUserInfo(res)
+      queryClient.invalidateQueries('user') // Invalidate any user-related queries
       navigate('/')
     },
     onError: (res) => {
@@ -81,5 +84,5 @@ export default function SignIn() {
         </div>
       </div>
     </div>
-  );
+  )
 }
