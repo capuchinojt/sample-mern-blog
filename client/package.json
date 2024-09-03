@@ -1,6 +1,9 @@
 {
-  "name": "client",
-  "private": true,
+  "name": "@capuchinojt/sample-mern-blog",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "private": false,
   "version": "0.0.0",
   "type": "module",
   "homepage": "https://capuchinojt.github.io/sample-mern-blog/",
