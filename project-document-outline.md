@@ -8,9 +8,156 @@ API: https://sample-mern-blog-1.onrender.com
 	* flowbite-react
 	* react-icons
 	* tailwindcss
- 
+	* @tanstack/react-query
+	* axios
+	* firebase
+	* react-quill
+	* react-circular-progressbar
+	* yup (for form validation)
+	* react-hook-form
+
 ### Server:
- - NodeJS 
+ - NodeJS
+ - Express
+ - MongoDB (with Mongoose)
+ - JWT for authentication
+ - bcryptjs for password hashing
+ - Winston for logging
+
+## Project Structure:
+
+### Client:
+1. Pages:
+   - Home
+   - About
+   - SignIn
+   - SignUp
+   - Dashboard
+   - CreatePost
+   - UpdatePost
+   - PostPage
+   - Projects
+
+2. Components:
+   - Header
+   - Footer
+   - DashProfile
+   - DashSidebar
+   - ThemeProvider
+   - PrivateRoute
+   - OAuth
+   - CommentSection
+   - CallToAction
+
+3. Utils:
+   - api.jsx (axios instance)
+
+4. Hooks:
+   - useSignOut
+
+5. Services:
+   - Zustand stores (userStore, commonStore)
+
+6. Constants:
+   - status.constants
+   - errorCode.constants
+
+### Server:
+1. Models:
+   - User
+   - Post
+   - Comment
+
+2. Controllers:
+   - authController
+   - userController
+   - postController
+   - commentController
+
+3. Routes:
+   - auth.route
+   - user.route
+   - post.route
+   - comment.route
+
+4. Middleware:
+   - verifyToken
+   - errorHandler
+
+5. Utils:
+   - logger.js (Winston configuration)
+
+## Features:
+1. User Authentication:
+   - Sign Up
+   - Sign In
+   - Sign Out
+   - OAuth with Google
+
+2. User Profile:
+   - View profile
+   - Update profile information
+   - Change password
+   - Upload profile picture
+
+3. Blog Posts:
+   - Create new posts
+   - Read posts
+   - Update posts
+   - Delete posts
+   - Like/Unlike posts
+
+4. Comments:
+   - Add comments to posts
+   - View comments
+   - Delete comments (for admins and comment owners)
+
+5. Admin Features:
+   - Manage users
+   - Manage all posts
+
+6. UI/UX:
+   - Responsive design
+   - Dark/Light mode toggle
+   - Rich text editor for post creation/editing
+
+7. Security:
+   - JWT for authentication
+   - Password hashing
+   - Protected routes
+
+8. Performance:
+   - React Query for efficient data fetching and caching
+   - Zustand for lightweight state management
+
+9. Logging:
+   - Centralized logging system using Winston
+
+## Deployment:
+- Client: Deployed on GitHub Pages
+- Server: Deployed on Render
+
+## Future Enhancements:
+1. Implement pagination for posts and comments
+2. Add search functionality
+3. Implement email verification
+4. Add social sharing features
+5. Implement a tagging system for posts
+6. Add analytics dashboard for admins
+
+## Development Workflow:
+1. Use Git for version control
+2. Follow a branching strategy (e.g., feature branches)
+3. Implement continuous integration/continuous deployment (CI/CD)
+4. Regular code reviews and testing
+
+## Documentation:
+1. Maintain this project outline
+2. Keep a development log (dev_log.md)
+3. Document API endpoints
+4. Update README.md with setup instructions and project overview
+
+### _______________________________________________________ ###
 
 ##### ___________________________________________________________ #####
 
@@ -118,8 +265,6 @@ API: https://sample-mern-blog-1.onrender.com
 	=> npm i react-quill --save
 
 
-### _______________________________________________________ ###	
-
 ### HEADER
  - Web Title to back Homepage
  - Text input to search
@@ -135,4 +280,3 @@ API: https://sample-mern-blog-1.onrender.com
 
 ### Sample project structure
  ![alt text](image.png)
- 
