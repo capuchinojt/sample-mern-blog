@@ -25,5 +25,6 @@ export default defineConfig({
       '@/': path.resolve(__dirname, './src/')
     },
   },
-  plugins: plugins
+  plugins: plugins,
+  base: '/sample-mern-blog/'
 });

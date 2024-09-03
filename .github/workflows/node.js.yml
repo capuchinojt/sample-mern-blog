@@ -43,7 +43,7 @@ jobs:
     - name: Deploy to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@v4
       with:
-        folder: ./client/dist
+        folder: client/dist  # Thay đổi từ ./client/dist thành client/dist
         branch: gh-pages
 
   publish-gpr:
