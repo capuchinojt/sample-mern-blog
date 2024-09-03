@@ -28,7 +28,7 @@ class DbConnection {
     })
     mongoose.connect(connectionString, {maxPoolSize: 50,}).then(() => {
       console.log('Connected MongoDB success!!')
-    }).catch((err) => console.log('Error connecting!!'))
+    }).catch((err) => console.log('Error connecting!! Error: ', err))
   }
   
   static getInstance() {
