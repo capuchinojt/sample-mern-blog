@@ -7,7 +7,7 @@ import { CallToAction } from "@/components/CallToAction"
 import { getPostsRequest } from "@/api/postApi"
 import { Blank } from "@/pages/Blank"
 import { apiErrorMessages } from "@/constant/errorCode.constants"
-
+import { CommentSection } from "@/components/CommentSection"
 
 export const PostPage = () => {
   const { postSlug } = useParams()
@@ -47,6 +47,7 @@ export const PostPage = () => {
       </div>
       <div className="p-3 max-w-2xl mx-auto w-full post-content" dangerouslySetInnerHTML={{__html: post?.content}} />
       <CallToAction />
+      <CommentSection postId={post._id} />
     </main>
   )
 }
