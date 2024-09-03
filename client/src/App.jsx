@@ -8,16 +8,18 @@ import Dashboard from "./pages/Dashboard"
 import { AdminRoute } from "./components/AdminRoute"
 import { CreatePost } from "./pages/CreatePost"
 import { UpdatePost } from "./pages/UpdatePost"
+import { ScrollToTop } from "./components/ScrollToTop"
 
 export default function App() {
 
   return (
     <BrowserRouter>
+    <ScrollToTop />
       <Header />
       <Routes>
         {
           // eslint-disable-next-line react/jsx-key
-          pages.map((page) => <Route {...page}/>)
+          pages.map((page) => <Route {...page} key={page.key}/>)
         }
         <Route element={<PrivateRoute />}>
           <Route element={<AdminRoute />}>
