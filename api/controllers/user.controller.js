@@ -4,63 +4,61 @@ import User from "../models/user.model.js"
 import { errorHandler } from "../utils/error.handle.js"
 import { validateEmail } from '../utils/commonLib.js'
 
+const logger = (action, details) => {
+  console.log(`[${new Date().toISOString()}] ${action}:`, JSON.stringify(details, null, 2))
+}
+
 export const getUserInfo = (req, res) => {
   res.json({ message: 'Welcome to user route'})
 }
 
-const checkAndUpdatePassword = async (req) => {
-  if (req.body.password) {
-    if (req.body.password.length < 6) {
-      throw new Error('Password must be at least 6 characters.')
-    }
-    return await bcryptjs.hash(req.body.password, 10)
+const validateAndUpdateField = async (field, value, userId, validationFn) => {
+  if (value) {
+    await validationFn(value, userId)
+    return value
   }
   return null
 }
 
-const checkAndUpdateUsername = async (req) => {
-  if (req.body.username) {
-    const username = req.body.username.toLowerCase()
-    if (username.length < 7 || username.length > 20) {
-      throw new Error('Username must be between 7 and 20 characters.')
-    }
-    if (username.includes(" ")) {
-      throw new Error('Username can not contain spaces.')
-    }
-    if (!username.match(/^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z0-9]+$/)) {
-      throw new Error('Username must contain both letters and numbers.')
-    }
-
-    const existingUser = await User.findOne({ username });
-    if (existingUser && existingUser._id.toString() !== req.params.userId) {
-      throw new Error('Username is already taken.')
-    }
-
-    return username
+const validatePassword = async (password) => {
+  if (password.length < 6) {
+    throw new Error('Password must be at least 6 characters.')
   }
-  return null
+  return await bcryptjs.hash(password, 10)
 }
 
-const checkEmail = async (req) => {
-  if (req.body.email) {
-    const email = req.body.email
-    if (!validateEmail(email)) {
-      throw new Error('Email is not valid.')
-    }
-
-    const existingUserByEmail = await User.findOne({ email }).select('_id')
-    console.log('existingUserByEmail: ', existingUserByEmail)
-    if (existingUserByEmail && existingUserByEmail._id.toString() !== req.params.userId) {
-      throw new Error('Email is already in use.')
-    }
-
-    return email
+const validateUsername = async (username, userId) => {
+  username = username.toLowerCase()
+  if (username.length < 7 || username.length > 20) {
+    throw new Error('Username must be between 7 and 20 characters.')
   }
-  return null
+  if (username.includes(" ")) {
+    throw new Error('Username can not contain spaces.')
+  }
+  if (!username.match(/^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z0-9]+$/)) {
+    throw new Error('Username must contain both letters and numbers.')
+  }
+
+  const existingUser = await User.findOne({ username });
+  if (existingUser && existingUser._id.toString() !== userId) {
+    throw new Error('Username is already taken.')
+  }
+}
+
+const validateEmailField = async (email, userId) => {
+  if (!validateEmail(email)) {
+    throw new Error('Email is not valid.')
+  }
+
+  const existingUserByEmail = await User.findOne({ email }).select('_id')
+  if (existingUserByEmail && existingUserByEmail._id.toString() !== userId) {
+    throw new Error('Email is already in use.')
+  }
 }
 
 export const getUsers = async (req, res, next) => {
   if (!req?.user?.isAdmin) {
+    logger('Access Denied', { userId: req?.user?.id, action: 'getUsers' })
     return next(errorHandler(403, 'You are not allowed to update.'))
   }
 
@@ -86,93 +84,97 @@ export const getUsers = async (req, res, next) => {
       createdAt: { $gte: oneMonthAgo }
     })
 
+    logger('Users Retrieved', { count: userList.length, totalUser, totalOfLastMonthUser })
     return res.status(200).json({
       users: userList,
       totalUser,
       totalOfLastMonthUser
     })
   } catch (error) {
-    console.error('Error getUsers::', error)
+    logger('Error getUsers', { error: error.message })
     next(errorHandler(400, error.message))
   }
 }
 
 export const updateUserInfo = async (req, res, next) => {
   try {
-    console.log('updateUserInfo', req.user)
     if (req.user.id !== req.params.userId) {
+      logger('Unauthorized Update Attempt', { attemptedBy: req.user.id, targetUser: req.params.userId })
       return next(errorHandler(403, 'You are not allowed to update.'))
     }
-    const password = await checkAndUpdatePassword(req)
-    const username = await checkAndUpdateUsername(req)
-    const email = await checkEmail(req)
 
     const updateFields = {
-      ...(password && { password }),
-      ...(username && { username }),
-      ...(email && { email }),
-      ...req.body.profilePicture && { profilePicture: req.body.profilePicture }
+      password: await validateAndUpdateField('password', req.body.password, req.params.userId, validatePassword),
+      username: await validateAndUpdateField('username', req.body.username, req.params.userId, validateUsername),
+      email: await validateAndUpdateField('email', req.body.email, req.params.userId, validateEmailField),
+      profilePicture: req.body.profilePicture
     }
 
-    const updatedUser = await User.findByIdAndUpdate(req.params.userId, {
-      $set: updateFields
-    }, { new: true }).select('-password')
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.userId,
+      { $set: Object.fromEntries(Object.entries(updateFields).filter(([_, v]) => v != null)) },
+      { new: true }
+    ).select('-password')
+
+    logger('User Updated', { userId: req.params.userId, updatedFields: Object.keys(updateFields) })
     res.status(200).json(updatedUser)
   } catch (error) {
-    console.error('Error updating user info:', error)
+    logger('Error Updating User', { userId: req.params.userId, error: error.message })
     next(errorHandler(400, error.message))
   }
 }
 
 export const deleteUser = async (req, res, next) => {
   try {
-    console.log('Delete user info:: ', req.user)
     if (req.user.id !== req.params.userId) {
+      logger('Unauthorized Delete Attempt', { attemptedBy: req.user.id, targetUser: req.params.userId })
       return next(errorHandler(403, 'You are not allowed to delete.'))
     }
 
-    const userToDelete = await User.findById(req.params.userId)
+    const userToDelete = await User.findByIdAndDelete(req.params.userId)
     if (!userToDelete) {
-      return next(errorHandler(403, 'User not found.'))
+      logger('User Not Found for Deletion', { userId: req.params.userId })
+      return next(errorHandler(404, 'User not found.'))
     }
-    await User.findByIdAndDelete(req.params.userId)
+    logger('User Deleted', { userId: req.params.userId })
     res.status(200).json('User has been deleted.')
   } catch (error) {
-    console.error('Error updating user info:', error)
+    logger('Error Deleting User', { userId: req.params.userId, error: error.message })
     next(errorHandler(400, error.message))
   }
 }
 
 export const deleteUserByAdmin = async (req, res, next) => {
   try {
-    console.log('Delete user info:: ', req.user)
-
     if (!req.user.isAdmin) {
+      logger('Non-Admin Delete Attempt', { attemptedBy: req.user.id, targetUser: req.params.userId })
       return next(errorHandler(403, 'You are not allowed to delete user.'))
     }
 
     if (req.user.id === req.params.userId) {
+      logger('Admin Self-Delete Attempt', { adminId: req.user.id })
       return next(errorHandler(403, 'You can not delete yourself.'))
     }
 
-    const userToDelete = await User.findById(req.params.userId)
+    const userToDelete = await User.findByIdAndDelete(req.params.userId)
     if (!userToDelete) {
-      return next(errorHandler(403, 'User not found.'))
+      logger('User Not Found for Admin Deletion', { userId: req.params.userId })
+      return next(errorHandler(404, 'User not found.'))
     }
-    await User.findByIdAndDelete(req.params.userId)
+    logger('User Deleted by Admin', { deletedUserId: req.params.userId, adminId: req.user.id })
     res.status(200).json('User has been deleted by admin.')
   } catch (error) {
-    console.error('Error deleting user by admin::', error)
+    logger('Error in Admin User Deletion', { targetUser: req.params.userId, adminId: req.user.id, error: error.message })
     next(errorHandler(400, error.message))
   }
 }
 
 export const signOut = async (req, res, next) => {
   try {
-    console.log('Sign out', req.user)
+    logger('User Sign Out', { userId: req.user.id })
     res.clearCookie('access_token').status(200).json({message: "User has been signed out!"})
   } catch (error) {
-    console.error('Error sign out:', error)
+    logger('Error Signing Out', { userId: req.user.id, error: error.message })
     next(errorHandler(400, error.message))
   }
 }
